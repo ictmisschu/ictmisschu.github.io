@@ -219,6 +219,12 @@
   counter-reset: chapter;
 }
 
+.chapter-list:has(> li:nth-child(5)) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+}
+
 .chapter-list li {
   display: grid;
   grid-template-columns: 56px minmax(0, 1fr);
@@ -291,6 +297,7 @@
 
 .chapter-list h3,
 .chapter-list h4 {
+  min-width: 0;
   margin: 0;
   color: var(--primary);
   font-size: 1.08rem;
@@ -396,6 +403,10 @@
   .chapter-tracks {
     grid-template-columns: 1fr;
     gap: 32px;
+  }
+
+  .chapter-list:has(> li:nth-child(5)) {
+    grid-template-columns: 1fr;
   }
 }
 
