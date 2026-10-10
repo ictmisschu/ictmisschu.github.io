@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="title desc">
+  <title id="title">Databases</title>
+  <desc id="desc">Cute pastel illustration for Databases</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#eef8ff"/>
+      <stop offset="100%" stop-color="#ddf8ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <circle cx="118" cy="104" r="56" fill="#fff6cc" opacity="0.9"/>
+  <circle cx="534" cy="286" r="64" fill="#dff7ef" opacity="0.9"/>
+  <g transform="translate(118 82)">
+    <rect x="0" y="0" width="404" height="236" rx="30" fill="#f7fbff" stroke="#bde0ff" stroke-width="4"/>
+    <rect x="42" y="52" width="320" height="52" rx="16" fill="#bfe7ff"/>
+    <rect x="42" y="120" width="320" height="52" rx="16" fill="#9ed7e8"/>
+    <rect x="42" y="188" width="320" height="52" rx="16" fill="#a5d6ff"/>
+    <circle cx="80" cy="78" r="10" fill="#ffffff"/>
+    <circle cx="114" cy="146" r="10" fill="#ffffff"/>
+    <circle cx="148" cy="214" r="10" fill="#ffffff"/>
+    <circle cx="250" cy="78" r="10" fill="#ffffff"/>
+    <circle cx="286" cy="146" r="10" fill="#ffffff"/>
+    <circle cx="322" cy="214" r="10" fill="#ffffff"/>
+    <g transform="translate(370 44)">
+      <rect x="0" y="0" width="86" height="86" rx="18" fill="#ffd7d9"/>
+      <circle cx="28" cy="34" r="6" fill="#fff"/>
+      <circle cx="58" cy="34" r="6" fill="#fff"/>
+      <path d="M29 52c8 10 20 10 28 0" fill="none" stroke="#8b5d66" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="title desc">
+  <title id="title">Information Processing</title>
+  <desc id="desc">Cute pastel illustration for Information Processing</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#eef8ff"/>
+      <stop offset="100%" stop-color="#d9f2ff"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#ebf8ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <circle cx="120" cy="108" r="56" fill="#fff8c8" opacity="0.9"/>
+  <circle cx="548" cy="292" r="64" fill="#dff7f3" opacity="0.9"/>
+  <rect x="72" y="62" width="500" height="276" rx="38" fill="url(#card)" opacity="0.96"/>
+  <rect x="116" y="94" width="286" height="176" rx="22" fill="#cfe8ff"/>
+  <rect x="132" y="114" width="94" height="12" rx="6" fill="#90d9d9"/>
+  <rect x="132" y="138" width="138" height="12" rx="6" fill="#a8d7ff"/>
+  <rect x="132" y="162" width="150" height="12" rx="6" fill="#b9e7d7"/>
+  <rect x="132" y="186" width="116" height="12" rx="6" fill="#9ac8ff"/>
+  <rect x="132" y="210" width="134" height="12" rx="6" fill="#d7f2e8"/>
+  <g transform="translate(422 128)">
+    <rect x="0" y="0" width="98" height="116" rx="20" fill="#f4fbff" stroke="#77cfe6" stroke-width="4"/>
+    <rect x="18" y="25" width="62" height="56" rx="12" fill="#8dd5ff"/>
+    <path d="M27 92c12-14 23-21 44-21 14 0 28 7 38 21" fill="none" stroke="#4aa7d8" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="34" cy="46" r="4" fill="#fff"/>
+    <circle cx="62" cy="46" r="4" fill="#fff"/>
+    <path d="M42 58c6 8 18 8 24 0" fill="none" stroke="#2b7fb7" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(472 288)">
+    <circle cx="0" cy="0" r="22" fill="#ffd6d9"/>
+    <circle cx="-12" cy="-2" r="4" fill="#4a4a4a"/>
+    <circle cx="12" cy="-2" r="4" fill="#4a4a4a"/>
+    <path d="M-12 14c6 8 18 8 24 0" fill="none" stroke="#4a4a4a" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>
