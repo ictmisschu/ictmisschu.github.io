@@ -6,46 +6,10 @@
     <title>HKDSE ICT - 必修單元 C：互聯網及其應用</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="core.css" />
+    <script src="navigation.js" defer></script>
   </head>
   <body>
-    <nav class="site-menu" aria-label="主選單">
-      <a class="brand" href="index.html" aria-label="HKDSE ICT 首頁">
-        <span class="brand-mark">ICT</span>
-        <span class="brand-name">Ms. Chu</span>
-      </a>
-      <div class="nav-links">
-        <details class="nav-dropdown" name="primary-menu">
-          <summary>主頁</summary>
-          <div class="nav-submenu">
-            <a href="index.html#top">首頁</a>
-            <a href="index.html#course-aim">課程宗旨</a>
-            <a href="index.html#learning-goals">學習目標</a>
-            <a href="index.html#sba">校本評核</a>
-            <a href="index.html#exam-timetable">考試時間表</a>
-            <a href="index.html#glossary">常用詞彙</a>
-          </div>
-        </details>
-        <details class="nav-dropdown" name="primary-menu">
-          <summary>必修單元</summary>
-          <div class="nav-submenu">
-            <a href="core-a.html">單元 A：資訊處理</a>
-            <a href="core-b.html">單元 B：電腦系統基礎</a>
-            <a href="core-c.html">單元 C：互聯網及其應用</a>
-            <a href="core-d.html">單元 D：計算思維與程式編寫</a>
-            <a href="core-e.html">單元 E：資訊及通訊科技對社會的影響</a>
-          </div>
-        </details>
-        <details class="nav-dropdown" name="primary-menu">
-          <summary>選修單元</summary>
-          <div class="nav-submenu">
-            <a href="elective-a.html">A. 數據庫</a>
-            <a href="elective-b.html">B. 網絡應用程式開發</a>
-            <a href="elective-c.html">C. 算法與程式編寫</a>
-          </div>
-        </details>
-      </div>
-      <a class="nav-cta" href="index.html#compulsory">開始學習</a>
-    </nav>
+    <div id="site-navigation"></div>
 
     <main class="unit-page unit-page-c" id="unit-c">
       <section class="unit-hero" aria-labelledby="unit-title">
@@ -112,9 +76,9 @@
               <h3 id="chapter-c1-title">互聯網基礎</h3>
             </div>
             <ol class="chapter-list">
-              <li><span class="chapter-number">01</span><h4>1. 建網及互聯網基本知識</h4></li>
-              <li><span class="chapter-number">02</span><h4>2. 互聯網協定</h4></li>
-              <li><span class="chapter-number">03</span><h4>3. 互聯網服務及應用</h4></li>
+              <li><span class="chapter-number">01</span><h4>建網及互聯網基本知識</h4></li>
+              <li><span class="chapter-number">02</span><h4>互聯網協定</h4></li>
+              <li><span class="chapter-number">03</span><h4>互聯網服務及應用</h4></li>
             </ol>
           </section>
           <section class="chapter-track" aria-labelledby="chapter-c2-title">
@@ -123,9 +87,9 @@
               <h3 id="chapter-c2-title">網頁創作與網絡安全</h3>
             </div>
             <ol class="chapter-list">
-              <li><span class="chapter-number">04</span><h4>4. 初級網頁創作</h4></li>
-              <li><span class="chapter-number">05</span><h4>5. 網絡安全和私隱威脅</h4></li>
-              <li><span class="chapter-number">06</span><h4>6. 網絡保安措施</h4></li>
+              <li><span class="chapter-number">04</span><h4>初級網頁創作</h4></li>
+              <li><span class="chapter-number">05</span><h4>網絡安全和私隱威脅</h4></li>
+              <li><span class="chapter-number">06</span><h4>網絡保安措施</h4></li>
             </ol>
           </section>
         </div>
@@ -137,15 +101,5 @@
       </nav>
     </main>
 
-    <script>
-      document.addEventListener('click', (event) => {
-        const openMenus = document.querySelectorAll('.nav-dropdown[open]');
-        openMenus.forEach((menu) => {
-          if (!menu.contains(event.target)) {
-            menu.removeAttribute('open');
-          }
-        });
-      });
-    </script>
   </body>
 </html>

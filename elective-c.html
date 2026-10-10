@@ -7,46 +7,10 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="core.css" />
     <link rel="stylesheet" href="elective.css" />
+    <script src="navigation.js" defer></script>
   </head>
   <body>
-    <nav class="site-menu" aria-label="主選單">
-      <a class="brand" href="index.html" aria-label="HKDSE ICT 首頁">
-        <img class="brand-mark" src="images/dog.svg" alt="" />
-        <span class="brand-name">ict miss chu</span>
-      </a>
-      <div class="nav-links">
-        <details class="nav-dropdown" name="primary-menu">
-          <summary>主頁</summary>
-          <div class="nav-submenu">
-            <a href="index.html#top">首頁</a>
-            <a href="index.html#course-aim">課程宗旨</a>
-            <a href="index.html#learning-goals">學習目標</a>
-            <a href="index.html#assessment">評核模式</a>
-            <a href="index.html#exam-timetable">考試時間表</a>
-            <a href="index.html#glossary">常用詞彙</a>
-          </div>
-        </details>
-        <details class="nav-dropdown" name="primary-menu">
-          <summary>必修單元</summary>
-          <div class="nav-submenu">
-            <a href="core-a.html">單元 A：資訊處理</a>
-            <a href="core-b.html">單元 B：電腦系統基礎</a>
-            <a href="core-c.html">單元 C：互聯網及其應用</a>
-            <a href="core-d.html">單元 D：計算思維與程式編寫</a>
-            <a href="core-e.html">單元 E：資訊及通訊科技對社會的影響</a>
-          </div>
-        </details>
-        <details class="nav-dropdown" name="primary-menu">
-          <summary>選修單元</summary>
-          <div class="nav-submenu">
-            <a href="elective-a.html">A. 數據庫</a>
-            <a href="elective-b.html">B. 網絡應用程式開發</a>
-            <a href="elective-c.html" aria-current="page">C. 算法與程式編寫</a>
-          </div>
-        </details>
-      </div>
-      <a class="nav-cta" href="index.html#elective">返回選修目錄</a>
-    </nav>
+    <div id="site-navigation"></div>
 
     <main class="unit-page elective-page" id="elective-c">
       <section class="unit-hero" aria-labelledby="unit-title">
@@ -95,8 +59,14 @@
           <p>由程式編寫基礎，進一步認識程式如何應用於現實生活。</p>
         </div>
         <ol class="chapter-list">
-          <li><span class="chapter-number">01</span><h3>第1章 程式編寫 <span lang="en">Programming</span></h3></li>
-          <li><span class="chapter-number">02</span><h3>第2章 程式編寫在現實生活的應用 <span lang="en">Applications of Programming in Real Life</span></h3></li>
+          <li><span class="chapter-number">01</span><h3>算法設計及 Python 程式的基本知識<span lang="en">Algorithm Design & Basics of Python Programs</span></h3></li>
+          <li><span class="chapter-number">02</span><h3>程式測試和除錯（二）<span lang="en">Program Testing and Debugging (II)</span></h3></li>
+          <li><span class="chapter-number">03</span><h3>進階控制結構<span lang="en">Advanced Control Structures</span></h3></li>
+          <li><span class="chapter-number">04</span><h3>子程式<span lang="en">Sub-programs</span></h3></li>
+          <li><span class="chapter-number">05</span><h3>數據結構<span lang="en">Data Structures</span></h3></li>
+          <li><span class="chapter-number">06</span><h3>檢索及排序<span lang="en">Searching and Sorting</span></h3></li>
+          <li><span class="chapter-number">07</span><h3>文字檔案處理<span lang="en">Handling of Text Files</span></h3></li>
+          <li><span class="chapter-number">08</span><h3>程式編寫在現實生活的應用<span lang="en">Applications of Programming in Real Life</span></h3></li>
         </ol>
       </section>
 
@@ -106,13 +76,5 @@
       </nav>
     </main>
 
-    <script>
-      document.addEventListener('click', (event) => {
-        const openMenus = document.querySelectorAll('.nav-dropdown[open]');
-        openMenus.forEach((menu) => {
-          if (!menu.contains(event.target)) menu.removeAttribute('open');
-        });
-      });
-    </script>
   </body>
 </html>
