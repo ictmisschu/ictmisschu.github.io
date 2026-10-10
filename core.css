@@ -353,7 +353,33 @@
   background: #eef6f5;
 }
 
+.site-footer {
+  padding: 18px 0 28px;
+  border-top: 1px solid #dfeaf2;
+}
+
+.site-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  width: min(calc(100% - 48px), 1160px);
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.site-footer__inner p {
+  margin: 0;
+}
+
 @media (max-width: 760px) {
+  .site-footer__inner {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
   .unit-page {
     width: min(calc(100% - 32px), 600px);
     margin-top: 20px;
