@@ -1,0 +1,82 @@
+#elective-a {
+  --elective-accent: #137b7a;
+  --elective-tint: #e5f4f2;
+  --elective-soft: #eef6f5;
+  --elective-rule: #b7ded8;
+}
+
+#elective-b {
+  --elective-accent: #336f9e;
+  --elective-tint: #eaf1f8;
+  --elective-soft: #f0f5fa;
+  --elective-rule: #c0d2e3;
+}
+
+#elective-c {
+  --elective-accent: #9a5927;
+  --elective-tint: #fbf1dc;
+  --elective-soft: #fcf6e9;
+  --elective-rule: #e7c99c;
+}
+
+.elective-page .unit-hero {
+  background: var(--elective-tint);
+}
+
+.elective-page .unit-eyebrow,
+.elective-page .unit-hero-en,
+.elective-page .section-eyebrow {
+  color: var(--elective-accent);
+}
+
+.elective-page .unit-eyebrow span {
+  background: var(--elective-accent);
+  color: #ffffff;
+}
+
+.elective-page .unit-hero-link,
+.elective-page .unit-actions .primary {
+  background: var(--elective-accent);
+}
+
+.elective-page .unit-hero-link:hover,
+.elective-page .unit-actions .primary:hover {
+  background: var(--elective-accent);
+  filter: brightness(0.88);
+}
+
+.elective-page .unit-hero-art figcaption span,
+.elective-page .learning-points li span,
+.elective-page .chapter-number {
+  color: var(--elective-accent);
+}
+
+.elective-page .unit-summary {
+  border-color: var(--elective-rule);
+}
+
+.elective-page .summary-group li {
+  background: var(--elective-soft);
+}
+
+.elective-page .chapter-list {
+  border-top-color: var(--elective-rule);
+}
+
+.elective-page .chapter-list li {
+  border-bottom-color: var(--elective-rule);
+}
+
+.elective-page .chapter-list li:hover {
+  background: var(--elective-soft);
+}
+
+.elective-page .unit-actions .secondary:hover {
+  background: var(--elective-soft);
+}
+
+@media (max-width: 760px) {
+  .elective-page .unit-summary {
+    border-top-color: var(--elective-rule);
+  }
+}
