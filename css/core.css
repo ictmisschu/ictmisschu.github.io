@@ -312,6 +312,30 @@
   font-weight: 500;
 }
 
+.chapter-list h4 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.chapter-list h4 a:hover,
+.chapter-list h4 a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.chapter-list h4 a:focus-visible {
+  outline: 3px solid #f1bd4a;
+  outline-offset: 3px;
+}
+
+.chapter-page .unit-hero {
+  grid-template-columns: 1fr;
+}
+
+.chapter-page .unit-hero-summary {
+  max-width: 760px;
+}
+
 .unit-actions {
   display: flex;
   flex-wrap: wrap;
