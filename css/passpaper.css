@@ -1,0 +1,174 @@
+.passpaper-page {
+  width: min(calc(100% - 48px), 1160px);
+  margin: 32px auto 80px;
+}
+
+.passpaper-hero {
+  padding: 44px 48px;
+  background: #e5f4f2;
+  border-radius: 18px;
+}
+
+.passpaper-eyebrow {
+  margin: 0 0 12px;
+  color: #137b7a;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.passpaper-hero h1 {
+  margin: 0;
+  color: var(--primary);
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  line-height: 1.2;
+}
+
+.passpaper-hero-en {
+  margin: 12px 0;
+  color: #137b7a;
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.passpaper-summary {
+  margin: 18px 0 0;
+  color: #314b5a;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.passpaper-intro {
+  margin: 32px 0 24px;
+  padding: 22px 24px;
+  background: linear-gradient(180deg, var(--highlight) 0%, #ffffff 100%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.passpaper-intro h2 {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 1.35rem;
+}
+
+.passpaper-intro p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.passpaper-intro .passpaper-resource-label {
+  margin-top: 12px;
+  color: #137b7a;
+  font-weight: 700;
+}
+
+.passpaper-years {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+}
+
+.passpaper-year {
+  min-width: 0;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(29, 95, 168, 0.05);
+}
+
+.passpaper-year h2 {
+  margin: 0;
+  padding-bottom: 14px;
+  color: var(--primary);
+  font-size: 1.5rem;
+  border-bottom: 2px solid #b7ded8;
+}
+
+.passpaper-group {
+  margin-top: 18px;
+}
+
+.passpaper-group h3 {
+  margin: 0 0 10px;
+  color: #137b7a;
+  font-size: 1rem;
+}
+
+.passpaper-levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.passpaper-levels a,
+.passpaper-document {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 12px;
+  background: #eef6f5;
+  border: 1px solid #d6e9e5;
+  border-radius: 7px;
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.passpaper-levels a:hover,
+.passpaper-document:hover {
+  color: #ffffff;
+  background: #137b7a;
+  transform: translateY(-1px);
+}
+
+.passpaper-levels a:focus-visible,
+.passpaper-document:focus-visible {
+  outline: 3px solid #f1bd4a;
+  outline-offset: 3px;
+}
+
+.passpaper-group p {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .passpaper-page {
+    width: min(calc(100% - 32px), 600px);
+    margin-top: 20px;
+  }
+
+  .passpaper-hero {
+    padding: 30px 24px;
+  }
+
+  .passpaper-years {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .passpaper-year {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 420px) {
+  .passpaper-page {
+    width: calc(100% - 24px);
+  }
+
+  .passpaper-hero {
+    padding: 24px 18px;
+  }
+
+  .passpaper-intro {
+    padding: 18px;
+  }
+}

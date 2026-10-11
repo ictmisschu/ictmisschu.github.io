@@ -342,6 +342,238 @@
   max-width: 760px;
 }
 
+.ipo-definition {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 40px;
+  margin-top: 56px;
+}
+
+.ipo-definition-copy {
+  color: var(--text);
+  font-size: 1.08rem;
+  line-height: 1.8;
+}
+
+.ipo-definition-copy h2 {
+  margin: 0 0 18px;
+  color: var(--primary);
+  font-size: 1.8rem;
+}
+
+.ipo-definition-copy p {
+  margin: 0 0 16px;
+}
+
+.ipo-definition-copy ul {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding-left: 24px;
+}
+
+.ipo-definition-copy li {
+  padding-left: 4px;
+}
+
+.ipo-definition-copy strong {
+  color: #0757a6;
+}
+
+.ipo-english {
+  color: #137b7a;
+  font-weight: 700;
+}
+
+.ipo-diagram,
+.ipo-examples-grid figure,
+.ipo-takeaway {
+  margin: 0;
+}
+
+.ipo-diagram img,
+.ipo-examples-heading img,
+.ipo-examples-grid img,
+.ipo-takeaway img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ipo-examples {
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+
+.ipo-examples-heading {
+  margin: 0 auto 32px;
+}
+
+.ipo-examples-heading .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ipo-examples-heading p {
+  margin: 18px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.ipo-examples-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.ipo-examples-grid figure {
+  padding: 14px;
+  background: #f8fbff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.ipo-examples-grid figcaption {
+  margin-top: 10px;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ipo-takeaway {
+  margin-top: 36px;
+}
+
+.input-device-section {
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+
+.input-device-section .chapter-heading {
+  margin-bottom: 16px;
+}
+
+.input-device-intro,
+.keyboard-copy {
+  color: var(--text);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.input-device-intro {
+  margin: 0;
+}
+
+.input-connection-diagram {
+  width: min(100%, 900px);
+  margin: 28px auto 44px;
+}
+
+.input-connection-diagram img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.keyboard-section h3 {
+  margin: 0 0 16px;
+  color: var(--primary);
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
+.keyboard-copy p {
+  margin: 0 0 12px;
+}
+
+.keyboard-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 24px;
+  margin-top: 28px;
+}
+
+.keyboard-gallery figure {
+  display: grid;
+  grid-template-rows: minmax(150px, 1fr) auto;
+  justify-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 16px;
+  background: #f8fbff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.keyboard-gallery img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+}
+
+.keyboard-gallery figcaption {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.printer-section {
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+
+.printer-video-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.printer-video-gallery figure {
+  margin: 0;
+  padding: 16px;
+  background: #f8fbff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.printer-video {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: #e8eef3;
+  border-radius: 8px;
+}
+
+.printer-video iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.printer-video-gallery figcaption {
+  margin-top: 12px;
+  color: var(--primary);
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .unit-actions {
   display: flex;
   flex-wrap: wrap;
@@ -434,6 +666,51 @@
   .chapter-tracks {
     grid-template-columns: 1fr;
     gap: 32px;
+  }
+
+  .ipo-definition {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 40px;
+  }
+
+  .ipo-examples {
+    margin-top: 48px;
+    padding-top: 28px;
+  }
+
+  .ipo-examples-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .input-device-section {
+    margin-top: 48px;
+    padding-top: 28px;
+  }
+
+  .printer-section {
+    margin-top: 48px;
+    padding-top: 28px;
+  }
+
+  .printer-video-gallery {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .keyboard-gallery {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .keyboard-gallery figure {
+    grid-template-rows: auto auto;
+    width: 100%;
+  }
+
+  .keyboard-gallery img {
+    height: 190px;
   }
 
   .chapter-list:has(> li:nth-child(5)) {
