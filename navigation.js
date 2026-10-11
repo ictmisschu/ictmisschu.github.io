@@ -14,9 +14,16 @@
     .then((markup) => {
       mount.innerHTML = markup;
 
-      const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+      mount.querySelectorAll('[href], [src]').forEach((element) => {
+        for (const attribute of ['href', 'src']) {
+          const value = element.getAttribute(attribute);
+          if (value) element.setAttribute(attribute, new URL(value, navigationUrl).href);
+        }
+      });
+
+      const currentPage = window.location.pathname;
       mount.querySelectorAll('.nav-submenu a').forEach((link) => {
-        if (link.getAttribute('href') === currentPage) {
+        if (new URL(link.href).pathname === currentPage) {
           link.setAttribute('aria-current', 'page');
         }
       });
