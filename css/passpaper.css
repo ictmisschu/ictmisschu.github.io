@@ -64,6 +64,60 @@
   font-weight: 700;
 }
 
+.practice-selector {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 20px;
+  margin: 0 0 24px;
+  padding: 22px 24px;
+  background: #f8fbff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.practice-selector h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--primary);
+  font-size: 1.25rem;
+}
+
+.practice-selector label {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.practice-selector select {
+  min-width: 160px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #b9cbd6;
+  border-radius: 7px;
+  color: var(--primary);
+  font: inherit;
+}
+
+.practice-selector select:focus-visible {
+  outline: 3px solid #f1bd4a;
+  outline-offset: 3px;
+}
+
+.practice-results {
+  grid-column: 1 / -1;
+  min-height: 40px;
+}
+
+.practice-results p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.practice-results .passpaper-document {
+  margin: 0 8px 8px 0;
+}
+
 .passpaper-years {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -147,6 +201,21 @@
 
   .passpaper-hero {
     padding: 30px 24px;
+  }
+
+  .practice-selector {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 18px;
+  }
+
+  .practice-selector h2,
+  .practice-results {
+    grid-column: auto;
+  }
+
+  .practice-selector select {
+    width: 100%;
   }
 
   .passpaper-years {
