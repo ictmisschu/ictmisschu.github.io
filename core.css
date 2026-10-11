@@ -1,6 +1,7 @@
 .unit-page {
   width: min(calc(100% - 48px), 1160px);
   margin: 32px auto 80px;
+  padding: 0 24px;
 }
 
 .unit-hero {
