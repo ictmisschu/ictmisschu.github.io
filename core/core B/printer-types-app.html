@@ -1,624 +1,363 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-HK">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>打印機的類別 · HKDSE ICT</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+HK:wght@400;500;700;900&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>打印機的類別 · HKDSE ICT 溫習與測試卡</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #cbd5e1;
+      --success: #16a34a;
+      --error: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; }
+    header { text-align: center; margin-bottom: 15px; }
+    header h1 { font-size: 1.4rem; color: var(--primary-dark); margin-bottom: 4px; }
+    header h1 span { font-size: 0.85rem; font-weight: normal; color: var(--text-light); display: block; }
 
-  :root{
-    --paper: #F6F4EC;
-    --paper-line: #DCD7C6;
-    --ink: #1C1B18;
-    --ink-soft: #55524A;
-    --cyan: #0097B2;
-    --magenta: #D6006D;
-    --yellow: #E8A800;
-    --key: #1C1B18;
-    --card: #FFFFFF;
-    --radius: 3px;
-  }
+    /* 模式切換按鈕列 */
+    .mode-selector { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+    .mode-btn { background: #e2e8f0; color: var(--text-light); border: none; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+    .mode-btn.active { background: var(--primary); color: white; }
+    
+    .container { max-width: 600px; width: 100%; margin: 0 auto; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    
+    /* 溫習卡樣式 */
+    .card-container { perspective: 1000px; width: 100%; height: 320px; cursor: pointer; margin-bottom: 16px; }
+    .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s ease; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+    .card.is-flipped { transform: rotateY(180deg); }
+    
+    .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; background: var(--card-bg); padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border: 2px solid var(--border); }
+    .card-face.back { transform: rotateY(180deg); background: #eff6ff; border-color: #bfdbfe; align-items: flex-start; text-align: left; }
+    
+    .badge { background: #e2e8f0; color: var(--text-light); font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; font-weight: bold; text-transform: uppercase; }
+    .card-face.back .badge { background: #dbeafe; color: var(--primary); }
+    
+    h2 { font-size: 1.6rem; margin-bottom: 12px; color: var(--text); }
+    .card-face.back h2 { font-size: 1.3rem; color: var(--primary-dark); border-bottom: 2px solid #bfdbfe; width: 100%; padding-bottom: 8px; margin-bottom: 10px; }
+    
+    p.hint { font-size: 0.85rem; color: var(--text-light); margin-top: 12px; }
+    
+    .points-list { list-style-type: disc; padding-left: 20px; font-size: 0.9rem; line-height: 1.5; color: var(--text); width: 100%; }
+    .points-list li { margin-bottom: 4px; }
 
-  *{ box-sizing: border-box; }
+    /* 測驗模式樣式 */
+    .quiz-card { background: var(--card-bg); border: 2px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: none; flex-direction: column; margin-bottom: 16px; }
+    .quiz-card.active-mode { display: flex; }
+    .quiz-question { font-size: 1.05rem; font-weight: bold; margin-bottom: 16px; line-height: 1.5; }
+    .options-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+    .option-btn { background: #f1f5f9; color: var(--text); border: 2px solid var(--border); padding: 12px 16px; border-radius: 10px; font-size: 0.95rem; text-align: left; cursor: pointer; transition: all 0.2s; }
+    .option-btn:hover:not(:disabled) { background: #e2e8f0; border-color: var(--primary); }
+    .option-btn.correct { background: #dcfce7; border-color: var(--success); color: #166534; font-weight: bold; }
+    .option-btn.incorrect { background: #fee2e2; border-color: var(--error); color: #991b1b; }
+    .quiz-feedback { font-size: 0.9rem; margin-top: 10px; min-height: 24px; font-weight: bold; }
 
-  html, body{
-    margin:0; padding:0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Noto Sans HK', -apple-system, sans-serif;
-  }
-
-  body{
-    background-image:
-      repeating-linear-gradient(180deg, transparent, transparent 27px, var(--paper-line) 27px, var(--paper-line) 28px);
-    min-height: 100vh;
-  }
-
-  .sheet{
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 40px 24px 80px;
-  }
-
-  /* perforated edge strip */
-  .perf{
-    display:flex;
-    justify-content: space-between;
-    padding: 0 4px;
-    margin-bottom: 18px;
-  }
-  .perf span{
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--paper-line);
-  }
-
-  header.masthead{
-    border-bottom: 3px solid var(--ink);
-    padding-bottom: 14px;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .masthead h1{
-    font-family: 'Space Mono', monospace;
-    font-weight: 700;
-    font-size: clamp(26px, 5vw, 38px);
-    margin: 0;
-    letter-spacing: -0.5px;
-    line-height: 1.05;
-  }
-  .masthead .cn{
-    font-family: 'Noto Sans HK', sans-serif;
-    font-weight: 900;
-    display:block;
-    font-size: 0.55em;
-    margin-top: 4px;
-    color: var(--ink-soft);
-    letter-spacing: 0;
-  }
-
-  .cmyk-dots{
-    display:flex; gap: 6px;
-  }
-  .cmyk-dots span{
-    width: 14px; height: 14px;
-    border-radius: 50%;
-  }
-  .cmyk-dots span:nth-child(1){ background: var(--cyan); }
-  .cmyk-dots span:nth-child(2){ background: var(--magenta); }
-  .cmyk-dots span:nth-child(3){ background: var(--yellow); }
-  .cmyk-dots span:nth-child(4){ background: var(--key); }
-
-  nav.tabs{
-    display:flex;
-    gap: 0;
-    margin-bottom: 28px;
-    border: 2px solid var(--ink);
-    border-radius: var(--radius);
-    overflow: hidden;
-    width: fit-content;
-  }
-  nav.tabs button{
-    font-family: 'Space Mono', monospace;
-    font-size: 14px;
-    font-weight: 700;
-    background: var(--paper);
-    color: var(--ink);
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background .15s ease, color .15s ease;
-  }
-  nav.tabs button + button{ border-left: 2px solid var(--ink); }
-  nav.tabs button.active{
-    background: var(--ink);
-    color: var(--paper);
-  }
-  nav.tabs button:not(.active):hover{
-    background: #ECE8DA;
-  }
-
-  section{ display:none; }
-  section.active{ display:block; }
-
-  /* ===== Flashcards ===== */
-  .fc-wrap{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap: 18px;
-  }
-
-  .fc-progress{
-    font-family:'Space Mono', monospace;
-    font-size: 13px;
-    color: var(--ink-soft);
-  }
-
-  .fc-stage{
-    width: 100%;
-    max-width: 520px;
-    aspect-ratio: 4 / 3;
-    perspective: 1400px;
-    cursor: pointer;
-  }
-
-  .fc-inner{
-    position: relative;
-    width:100%; height:100%;
-    transition: transform .5s cubic-bezier(.2,.8,.2,1);
-    transform-style: preserve-3d;
-  }
-  .fc-stage.flipped .fc-inner{ transform: rotateY(180deg); }
-
-  .fc-face{
-    position:absolute; inset:0;
-    backface-visibility: hidden;
-    border: 2px solid var(--ink);
-    border-radius: 6px;
-    background: var(--card);
-    padding: 28px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    box-shadow: 6px 6px 0 var(--ink);
-  }
-
-  .fc-face.back{
-    transform: rotateY(180deg);
-    background: #FDFBF4;
-  }
-
-  .fc-label{
-    font-family:'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: var(--ink-soft);
-    margin-bottom: 10px;
-  }
-
-  .fc-face.front h2{
-    font-size: clamp(22px, 4.5vw, 30px);
-    margin: 0;
-    line-height: 1.3;
-  }
-  .fc-face.front .accent-bar{
-    width: 46px; height: 5px;
-    margin-top: 16px;
-    background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--yellow));
-  }
-  .fc-face.front .hint-txt{
-    margin-top: 18px;
-    font-size: 14px;
-    color: var(--ink-soft);
-  }
-
-  .fc-face.back p{
-    font-size: 16px;
-    line-height: 1.75;
-    margin: 0;
-  }
-
-  .fc-tap-hint{
-    text-align:center;
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin-top: 4px;
-  }
-
-  .fc-controls{
-    display:flex;
-    gap: 14px;
-    align-items:center;
-  }
-  .btn{
-    font-family:'Space Mono', monospace;
-    font-weight: 700;
-    font-size: 13px;
-    border: 2px solid var(--ink);
-    background: var(--paper);
-    color: var(--ink);
-    padding: 10px 18px;
-    border-radius: var(--radius);
-    cursor:pointer;
-    transition: transform .1s ease, background .15s ease;
-  }
-  .btn:hover{ background: #ECE8DA; }
-  .btn:active{ transform: translateY(2px); }
-  .btn.primary{
-    background: var(--ink);
-    color: var(--paper);
-  }
-  .btn.primary:hover{ background: #33312B; }
-  .btn:disabled{ opacity: .35; cursor:not-allowed; }
-
-  .fc-dots{
-    display:flex; gap:6px; flex-wrap:wrap; justify-content:center; max-width: 400px;
-  }
-  .fc-dots span{
-    width: 9px; height: 9px; border-radius: 50%;
-    background: var(--paper-line);
-    border: 1px solid var(--ink-soft);
-    cursor:pointer;
-  }
-  .fc-dots span.current{ background: var(--ink); }
-
-  /* ===== Quiz ===== */
-  .quiz-head{
-    display:flex; justify-content:space-between; align-items:baseline;
-    margin-bottom: 18px; flex-wrap:wrap; gap:8px;
-  }
-  .quiz-progress{
-    font-family:'Space Mono', monospace; font-size: 13px; color: var(--ink-soft);
-  }
-  .quiz-score{
-    font-family:'Space Mono', monospace; font-size: 13px; color: var(--ink-soft);
-  }
-
-  .q-card{
-    border: 2px solid var(--ink);
-    border-radius: 6px;
-    background: var(--card);
-    padding: 26px;
-    box-shadow: 6px 6px 0 var(--ink);
-    margin-bottom: 20px;
-  }
-
-  .q-card .q-num{
-    font-family:'Space Mono', monospace;
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin-bottom: 8px;
-  }
-  .q-card h3{
-    margin: 0 0 20px;
-    font-size: clamp(17px, 3.5vw, 20px);
-    line-height: 1.5;
-  }
-
-  .opt{
-    display:block;
-    width:100%;
-    text-align:left;
-    font-family:'Noto Sans HK', sans-serif;
-    font-size: 15px;
-    padding: 13px 16px;
-    margin-bottom: 10px;
-    background: var(--paper);
-    border: 2px solid var(--ink-soft);
-    border-radius: var(--radius);
-    cursor:pointer;
-    transition: border-color .12s ease, background .12s ease;
-  }
-  .opt:hover{ border-color: var(--ink); }
-  .opt.selected{ border-color: var(--ink); background:#ECE8DA; }
-  .opt.correct{ border-color: var(--cyan); background: #E3F5F7; }
-  .opt.wrong{ border-color: var(--magenta); background: #FBE5F0; }
-  .opt:disabled{ cursor:default; }
-
-  .feedback{
-    margin-top: 14px;
-    padding: 14px 16px;
-    border-radius: var(--radius);
-    font-size: 14px;
-    line-height: 1.7;
-    display:none;
-  }
-  .feedback.show{ display:block; }
-  .feedback.right{ background:#E3F5F7; border-left: 4px solid var(--cyan); }
-  .feedback.wrong-fb{ background:#FBE5F0; border-left: 4px solid var(--magenta); }
-  .feedback b{ display:block; margin-bottom: 4px; }
-
-  .quiz-nav{
-    display:flex; justify-content: space-between; align-items:center;
-  }
-
-  .result{
-    text-align:center;
-    padding: 40px 20px;
-  }
-  .result .big{
-    font-family:'Space Mono', monospace;
-    font-size: 52px;
-    font-weight: 700;
-  }
-  .result p{ color: var(--ink-soft); }
-
-  footer{
-    text-align:center;
-    font-family:'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--ink-soft);
-    margin-top: 40px;
-    padding-top: 16px;
-    border-top: 1px solid var(--paper-line);
-  }
-
-  @media (max-width:520px){
-    .sheet{ padding: 24px 16px 60px; }
-    .fc-face{ padding: 20px; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .fc-inner{ transition: none; }
-  }
-</style>
+    .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    button.action-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.2s; font-weight: 500; }
+    button.action-btn:hover { background: var(--primary-dark); }
+    button.action-btn:disabled { background: var(--border); cursor: not-allowed; }
+    
+    .counter { font-size: 0.9rem; color: var(--text-light); font-weight: bold; }
+    .tip { text-align: center; font-size: 0.85rem; color: var(--text-light); margin-top: 12px; }
+    footer { text-align: center; font-size: 0.75rem; color: var(--text-light); margin-top: 20px; }
+  </style>
 </head>
 <body>
 
-<div class="sheet">
-  <div class="perf">
-    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-  </div>
-
-  <header class="masthead">
-    <h1>PRINTER TYPES
-      <span class="cn">打印機的類別 · HKDSE ICT 核心單元</span>
+  <header>
+    <h1>打印機類別 (Printer Types)
+      <span>HKDSE ICT 核心單元 (Core B) 溫習工具</span>
     </h1>
-    <div class="cmyk-dots"><span></span><span></span><span></span><span></span></div>
+    <!-- 模式選擇按鈕 -->
+    <div class="mode-selector" style="margin-top: 12px;">
+      <button class="mode-btn active" id="mode-study-btn" onclick="switchMode('study')">📖 溫習卡模式</button>
+      <button class="mode-btn" id="mode-test-btn" onclick="switchMode('test')">📝 DSE 概念測試</button>
+    </div>
   </header>
 
-  <nav class="tabs">
-    <button class="active" data-tab="flash">FLASHCARDS</button>
-    <button data-tab="quiz">QUIZ</button>
-  </nav>
-
-  <!-- ===== FLASHCARDS ===== -->
-  <section id="flash" class="active">
-    <div class="fc-wrap">
-      <div class="fc-progress" id="fcProgress">1 / 5</div>
-
-      <div class="fc-stage" id="fcStage">
-        <div class="fc-inner" id="fcInner">
-          <div class="fc-face front">
-            <div class="fc-label">TERM</div>
-            <h2 id="fcFront"></h2>
-            <div class="accent-bar"></div>
-            <div class="hint-txt">撳一下卡片，睇特性重點</div>
+  <div class="container">
+    <!-- 溫習卡介面 -->
+    <div id="study-container">
+      <div class="card-container" onclick="toggleCard()">
+        <div class="card" id="flashcard">
+          <!-- 正面 -->
+          <div class="card-face front">
+            <div class="badge" id="card-type">分類：衝擊式打印機</div>
+            <h2 id="card-term">點陣式打印機 (Dot Matrix Printer)</h2>
+            <p class="hint">👆 點擊卡片查看 DSE 考試重點</p>
           </div>
-          <div class="fc-face back">
-            <div class="fc-label">重點</div>
-            <p id="fcBack"></p>
+          <!-- 背面 -->
+          <div class="card-face back">
+            <div class="badge">HKDSE 考試重點 (Key Points)</div>
+            <h2 id="card-term-back">點陣式打印機</h2>
+            <ul class="points-list" id="card-points">
+              <!-- 動態載入重點 -->
+            </ul>
           </div>
         </div>
       </div>
-      <div class="fc-tap-hint">撳卡片翻轉</div>
-
-      <div class="fc-controls">
-        <button class="btn" id="fcPrev">← 上一張</button>
-        <button class="btn primary" id="fcFlipBtn">翻轉</button>
-        <button class="btn" id="fcNext">下一張 →</button>
+      <div class="tip">💡 提示：點擊卡片可翻轉檢視溫習重點</div>
+      <div class="controls">
+        <button class="action-btn" id="prev-btn" onclick="prevCard()">上一張</button>
+        <div class="counter" id="counter">1 / 4</div>
+        <button class="action-btn" id="next-btn" onclick="nextCard()">下一張</button>
       </div>
-
-      <div class="fc-dots" id="fcDots"></div>
     </div>
-  </section>
 
-  <!-- ===== QUIZ ===== -->
-  <section id="quiz">
-    <div id="quizArea"></div>
-  </section>
-
-  <footer>SECICTFC_c_FC_DSE_CB03 &middot; 練習內容根據 HKDSE ICT 課程主題編寫</footer>
-</div>
-
-<script>
-const CARDS = [
-  {
-    term: "點陣式打印機",
-    sub: "Dot Matrix Printer",
-    back: "撞擊式：用打印針撞擊色帶印在紙上　·　可同時打印多份複寫副本　·　噪音大、質素較低　·　常用於發票、收據"
-  },
-  {
-    term: "噴墨打印機",
-    sub: "Inkjet Printer",
-    back: "非撞擊式：將微細墨點噴射到紙上　·　彩色印刷質素高　·　適合家庭使用及相片列印　·　墨水盒成本相對較高"
-  },
-  {
-    term: "激光打印機",
-    sub: "Laser Printer",
-    back: "非撞擊式：利用碳粉及靜電原理　·　打印速度快、質素高、每張成本低　·　適合辦公室大量黑白或彩色列印"
-  },
-  {
-    term: "熱感打印機",
-    sub: "Thermal Printer",
-    back: "非撞擊式：用熱力喺感熱紙上顯影　·　速度快、噪音低、結構簡單　·　列印字跡隔一段時間會褪色　·　常用於收銀機、標籤"
-  },
-  {
-    term: "3D打印機",
-    sub: "3D Printer",
-    back: "透過層層堆疊物料（如塑膠、金屬粉）建構立體物件　·　常用於建模、醫療、工業設計等領域"
-  }
-];
-
-const QUESTIONS = [
-  {
-    q: "以下邊種打印機屬於「撞擊式」(impact) 打印機？",
-    opts: ["噴墨打印機", "激光打印機", "點陣式打印機", "熱感打印機"],
-    correct: 2,
-    exp: "點陣式打印機透過打印針撞擊色帶留下印記，屬於撞擊式；其餘三種都是非撞擊式 (non-impact)。"
-  },
-  {
-    q: "邊種打印機最適合用嚟大量打印文件，速度快、質素高？",
-    opts: ["噴墨打印機", "激光打印機", "點陣式打印機", "3D打印機"],
-    correct: 1,
-    exp: "激光打印機利用碳粉及靜電原理，打印速度快、質素高，適合辦公室大量打印。"
-  },
-  {
-    q: "噴墨打印機 (Inkjet printer) 嘅主要工作原理係？",
-    opts: ["用打印針撞擊色帶", "將微細墨點噴射到紙上", "用高溫燒灼特製紙張", "用碳粉及靜電原理"],
-    correct: 1,
-    exp: "噴墨打印機透過噴嘴將微細墨點直接噴射到紙上組成文字或圖像，適合打印彩色相片。"
-  },
-  {
-    q: "超市收銀機打印嘅單據通常用邊種打印機？",
-    opts: ["激光打印機", "熱感打印機", "3D打印機", "噴墨打印機"],
-    correct: 1,
-    exp: "熱感打印機利用熱力喺感熱紙上顯影，速度快、噪音低，常用於收銀單據及標籤打印。"
-  },
-  {
-    q: "以下邊項係點陣式打印機嘅優點？",
-    opts: ["打印質素最高", "可以一次過打印多份複寫副本", "完全冇噪音", "打印速度最快"],
-    correct: 1,
-    exp: "點陣式打印機靠實際撞擊打印，可透過複寫紙同時打印多份副本，常用於需要副本的文件。"
-  },
-  {
-    q: "邊種打印機能夠打印出立體實體物件？",
-    opts: ["3D打印機", "熱感打印機", "激光打印機", "點陣式打印機"],
-    correct: 0,
-    exp: "3D打印機透過層層堆疊物料（如塑膠、金屬粉）建構立體物件，常用於建模、醫療及工業設計。"
-  }
-];
-
-/* ---------- Tabs ---------- */
-document.querySelectorAll('nav.tabs button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
-  });
-});
-
-/* ---------- Flashcards ---------- */
-let fcIndex = 0;
-const fcStage = document.getElementById('fcStage');
-const fcFront = document.getElementById('fcFront');
-const fcBack = document.getElementById('fcBack');
-const fcProgress = document.getElementById('fcProgress');
-const fcDots = document.getElementById('fcDots');
-
-function renderDots(){
-  fcDots.innerHTML = '';
-  CARDS.forEach((_,i)=>{
-    const d = document.createElement('span');
-    if(i===fcIndex) d.classList.add('current');
-    d.addEventListener('click', ()=>{ fcIndex = i; showCard(false); });
-    fcDots.appendChild(d);
-  });
-}
-
-function showCard(flipped){
-  const c = CARDS[fcIndex];
-  fcFront.innerHTML = c.term + '<br><span style="font-family:\'Space Mono\',monospace;font-size:0.5em;color:var(--ink-soft);">' + c.sub + '</span>';
-  fcBack.textContent = c.back;
-  fcStage.classList.toggle('flipped', flipped);
-  fcProgress.textContent = (fcIndex+1) + ' / ' + CARDS.length;
-  renderDots();
-}
-
-fcStage.addEventListener('click', ()=>{
-  fcStage.classList.toggle('flipped');
-});
-document.getElementById('fcFlipBtn').addEventListener('click', (e)=>{
-  e.stopPropagation();
-  fcStage.classList.toggle('flipped');
-});
-document.getElementById('fcPrev').addEventListener('click', ()=>{
-  fcIndex = (fcIndex - 1 + CARDS.length) % CARDS.length;
-  showCard(false);
-});
-document.getElementById('fcNext').addEventListener('click', ()=>{
-  fcIndex = (fcIndex + 1) % CARDS.length;
-  showCard(false);
-});
-
-showCard(false);
-
-/* ---------- Quiz ---------- */
-let qIndex = 0;
-let score = 0;
-let answered = false;
-const quizArea = document.getElementById('quizArea');
-
-function renderQuestion(){
-  answered = false;
-  const item = QUESTIONS[qIndex];
-  quizArea.innerHTML = `
-    <div class="quiz-head">
-      <div class="quiz-progress">第 ${qIndex+1} 題 / 共 ${QUESTIONS.length} 題</div>
-      <div class="quiz-score">得分：${score}</div>
+    <!-- 測驗卡介面 -->
+    <div class="quiz-card" id="quiz-container">
+      <div class="badge" id="quiz-badge">測試題目 1 / 4</div>
+      <div class="quiz-question" id="quiz-question-text">載入中...</div>
+      <div class="options-grid" id="quiz-options">
+        <!-- 動態選項 -->
+      </div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <div class="controls" style="margin-top: 15px;">
+        <span class="counter" id="quiz-score">得分：0</span>
+        <button class="action-btn" id="quiz-next-btn" onclick="nextQuizQuestion()" style="display:none;">下一題</button>
+      </div>
     </div>
-    <div class="q-card">
-      <div class="q-num">Q${qIndex+1}</div>
-      <h3>${item.q}</h3>
-      <div id="optsWrap"></div>
-      <div class="feedback" id="feedback"></div>
-    </div>
-    <div class="quiz-nav">
-      <button class="btn" id="qPrev" ${qIndex===0 ? 'disabled':''}>← 上一題</button>
-      <button class="btn primary" id="qNext" disabled>${qIndex===QUESTIONS.length-1 ? '完成' : '下一題 →'}</button>
-    </div>
-  `;
+  </div>
 
-  const optsWrap = document.getElementById('optsWrap');
-  item.opts.forEach((opt, i)=>{
-    const b = document.createElement('button');
-    b.className = 'opt';
-    b.textContent = opt;
-    b.addEventListener('click', ()=> selectAnswer(i));
-    optsWrap.appendChild(b);
-  });
+  <!-- <footer>根據 HKDSE 資訊及通訊科技課程編寫</footer> -->
 
-  document.getElementById('qPrev').addEventListener('click', ()=>{
-    if(qIndex>0){ qIndex--; renderQuestion(); }
-  });
-  document.getElementById('qNext').addEventListener('click', ()=>{
-    if(qIndex < QUESTIONS.length-1){
-      qIndex++;
-      renderQuestion();
-    } else {
-      renderResult();
+  <script>
+    const printers = [
+      {
+        type: "衝擊式打印機 (Impact Printer)",
+        name: "點陣式打印機\n(Dot Matrix Printer)",
+        points: [
+          "運作原理：利用針（Pins）撞擊色帶（Ribbon）在紙張上留下點陣字體。",
+          "主要優點：能透過複寫紙（Multi-part stationery / Carbon copies）**同時印出多份副本**。",
+          "主要缺點：打印速度慢、運作時**噪音極大（Noisy）**、解像度及打印質素低。",
+          "典型應用：銀行櫃位列印存摺、發出貨單／支票、大量連續報表。"
+        ]
+      },
+      {
+        type: "非衝擊式打印機 (Non-impact Printer)",
+        name: "雷射打印機\n(Laser Printer)",
+        points: [
+          "運作原理：使用**碳粉（Toner）**、靜電感光鼓及熱力將碳粉熔合（Fused） en 紙上。",
+          "主要優點：**打印速度極高（High speed，以 ppm 計算）**、解像度高、每頁平均消耗成本較低（適合大量文件）。",
+          "主要缺點：初次購買機價及碳粉匣成本較高、體型較大。",
+          "典型應用：辦公室日常大量文件、學校打印試卷。"
+        ]
+      },
+      {
+        type: "非衝擊式打印機 (Non-impact Printer)",
+        name: "噴墨打印機\n(Inkjet Printer)",
+        points: [
+          "運作原理：透過噴嘴（Nozzles）將微細的**液體墨水（Ink droplets）**噴射到紙張上。",
+          "主要優點：擅長印出色彩豐富的圖像，**高質素相片打印表現極佳**、機身細小、初期購買成本較低。",
+          "主要缺點：如果長期不用容易堵塞噴嘴、墨水消耗成本相對較高（每頁成本較貴）、速度較雷射慢。",
+          "典型應用：家庭用戶、小型辦公室、打印彩色相片或宣傳單張。"
+        ]
+      },
+      {
+        type: "非衝擊式打印機 (Non-impact Printer)",
+        name: "感熱式打印機\n(Thermal Printer)",
+        points: [
+          "運作原理：利用加熱元件接觸**特殊感熱紙（Thermal paper）**，令其受熱變色形成文字或圖像。",
+          "主要優點：**無需補充墨水或碳粉**、運作寂靜、體積細小、速度快。",
+          "主要缺點：印出的收據日久會褪色、只能使用昂貴的專用感熱紙、通常只支援單色（多為黑／紅）。",
+          "典型應用：超級市場收銀機、零售店發票（Receipts）、信用卡簽帳單、標籤打印。"
+        ]
+      }
+    ];
+
+    const quizQuestions = [
+      {
+        q: "哪一種打印機最適合用來列印需要「同時產生多份複寫副本（Carbon copies）」的銀行存摺或發貨單？",
+        options: [
+          "A. 雷射打印機 (Laser Printer)",
+          "B. 噴墨打印機 (Inkjet Printer)",
+          "C. 點陣式打印機 (Dot Matrix Printer)",
+          "D. 感熱式打印機 (Thermal Printer)"
+        ],
+        answer: 2,
+        explanation: "正確！點陣式打印機屬於衝擊式，能透過物理撞擊複寫紙印出多份副本。"
+      },
+      {
+        q: "某超級市場收銀處需要一部高速、運作寧靜且「無需補充墨水或碳粉」的打印機來列印購物收據，應選擇哪一種？",
+        options: [
+          "A. 感熱式打印機 (Thermal Printer)",
+          "B. 點陣式打印機 (Dot Matrix Printer)",
+          "C. 雷射打印機 (Laser Printer)",
+          "D. 噴墨打印機 (Inkjet Printer)"
+        ],
+        answer: 0,
+        explanation: "正確！感熱式打印機使用感熱紙加熱變色，無需墨水或碳粉，非常適合收據打印。"
+      },
+      {
+        q: "學校日常需要大量及極高速度（以 ppm 計算）列印黑白試卷，哪一款打印機最符合經濟及效率原則？",
+        options: [
+          "A. 噴墨打印機 (Inkjet Printer)",
+          "B. 雷射打印機 (Laser Printer)",
+          "C. 感熱式打印機 (Thermal Printer)",
+          "D. 點陣式打印機 (Dot Matrix Printer)"
+        ],
+        answer: 1,
+        explanation: "正確！雷射打印機使用碳粉，具備極高的列印速度且大量打印時每頁成本較低。"
+      },
+      {
+        q: "關於噴墨打印機 (Inkjet Printer) 的特性，以下哪項描述是正確的？",
+        options: [
+          "A. 運作時會發出極大的機械噪音",
+          "B. 使用靜電感光鼓與碳粉匣",
+          "C. 印出的文字和收據日久會自動褪色",
+          "D. 擅長列印色彩豐富的高質素相片"
+        ],
+        answer: 3,
+        explanation: "正確！噴墨打印機能噴射微細墨滴，在相片列印上表現極佳。"
+      }
+    ];
+
+    let currentMode = 'study';
+    let currentIndex = 0;
+    let quizIndex = 0;
+    let score = 0;
+    let answeredCurrent = false;
+
+    // 模式切換
+    function switchMode(mode) {
+      currentMode = mode;
+      document.getElementById('mode-study-btn').classList.toggle('active', mode === 'study');
+      document.getElementById('mode-test-btn').classList.toggle('active', mode === 'test');
+      
+      document.getElementById('study-container').style.display = mode === 'study' ? 'block' : 'none';
+      document.getElementById('quiz-container').classList.toggle('active-mode', mode === 'test');
+
+      if (mode === 'test') {
+        initQuiz();
+      }
     }
-  });
-}
 
-function selectAnswer(i){
-  if(answered) return;
-  answered = true;
-  const item = QUESTIONS[qIndex];
-  const opts = document.querySelectorAll('.opt');
-  opts.forEach(o=> o.disabled = true);
+    // 溫習卡邏輯
+    function updateCard() {
+      const cardEl = document.getElementById('flashcard');
+      cardEl.classList.remove('is-flipped');
 
-  if(i === item.correct){
-    score++;
-    opts[i].classList.add('correct');
-  } else {
-    opts[i].classList.add('wrong');
-    opts[item.correct].classList.add('correct');
-  }
+      setTimeout(() => {
+        const item = printers[currentIndex];
+        document.getElementById('card-type').innerText = `分類：${item.type}`;
+        document.getElementById('card-term').innerText = item.name.replace('\n', ' ');
+        document.getElementById('card-term-back').innerText = item.name.replace('\n', ' ');
 
-  const fb = document.getElementById('feedback');
-  fb.classList.add('show', i===item.correct ? 'right' : 'wrong-fb');
-  fb.innerHTML = `<b>${i===item.correct ? '答對了！' : '答錯了'}</b>${item.exp}`;
+        const pointsList = document.getElementById('card-points');
+        pointsList.innerHTML = '';
+        item.points.forEach(point => {
+          const li = document.createElement('li');
+          li.innerHTML = point;
+          pointsList.appendChild(li);
+        });
 
-  document.getElementById('qNext').disabled = false;
-  document.querySelector('.quiz-score').textContent = '得分：' + score;
-}
+        document.getElementById('counter').innerText = `${currentIndex + 1} / ${printers.length}`;
+        document.getElementById('prev-btn').disabled = currentIndex === 0;
+        document.getElementById('next-btn').disabled = currentIndex === printers.length - 1;
+      }, 150);
+    }
 
-function renderResult(){
-  const pct = Math.round((score/QUESTIONS.length)*100);
-  quizArea.innerHTML = `
-    <div class="q-card result">
-      <div class="fc-label" style="text-align:center;">RESULT</div>
-      <div class="big">${score} / ${QUESTIONS.length}</div>
-      <p>正確率 ${pct}%</p>
-      <button class="btn primary" id="qRestart">重新測驗</button>
-    </div>
-  `;
-  document.getElementById('qRestart').addEventListener('click', ()=>{
-    qIndex = 0; score = 0; renderQuestion();
-  });
-}
+    function toggleCard() {
+      document.getElementById('flashcard').classList.toggle('is-flipped');
+    }
 
-renderQuestion();
-</script>
+    function nextCard() {
+      if (currentIndex < printers.length - 1) {
+        currentIndex++;
+        updateCard();
+      }
+    }
 
+    function prevCard() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCard();
+      }
+    }
+
+    // 測驗模式邏輯
+    function initQuiz() {
+      quizIndex = 0;
+      score = 0;
+      loadQuizQuestion();
+    }
+
+    function loadQuizQuestion() {
+      answeredCurrent = false;
+      const qData = quizQuestions[quizIndex];
+      document.getElementById('quiz-badge').innerText = `測試題目 ${quizIndex + 1} / ${quizQuestions.length}`;
+      document.getElementById('quiz-question-text').innerText = qData.q;
+      document.getElementById('quiz-feedback').innerText = '';
+      document.getElementById('quiz-score').innerText = `得分：${score}`;
+      document.getElementById('quiz-next-btn').style.display = 'none';
+
+      const optionsContainer = document.getElementById('quiz-options');
+      optionsContainer.innerHTML = '';
+
+      qData.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => selectOption(idx);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex) {
+      if (answeredCurrent) return;
+      answeredCurrent = true;
+
+      const qData = quizQuestions[quizIndex];
+      const buttons = document.querySelectorAll('.option-btn');
+      const feedbackEl = document.getElementById('quiz-feedback');
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === qData.answer) {
+          btn.classList.add('correct');
+        } else if (idx === selectedIndex) {
+          btn.classList.add('incorrect');
+        }
+      });
+
+      if (selectedIndex === qData.answer) {
+        score += 25;
+        feedbackEl.style.color = 'var(--success)';
+        feedbackEl.innerText = '🎉 ' + qData.explanation;
+      } else {
+        feedbackEl.style.color = 'var(--error)';
+        feedbackEl.innerText = '❌ 答錯了！' + qData.explanation;
+      }
+
+      document.getElementById('quiz-score').innerText = `得分：${score}`;
+      
+      if (quizIndex < quizQuestions.length - 1) {
+        document.getElementById('quiz-next-btn').style.display = 'block';
+        document.getElementById('quiz-next-btn').innerText = '下一題';
+      } else {
+        document.getElementById('quiz-next-btn').style.display = 'block';
+        document.getElementById('quiz-next-btn').innerText = '重新測驗';
+      }
+    }
+
+    function nextQuizQuestion() {
+      quizIndex++;
+      if (quizIndex < quizQuestions.length) {
+        loadQuizQuestion();
+      } else {
+        initQuiz();
+      }
+    }
+
+    // 初始化
+    updateCard();
+  </script>
 </body>
 </html>
