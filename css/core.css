@@ -532,6 +532,10 @@
   text-align: center;
 }
 
+.keyboard-section > .device-note-card {
+  margin-top: 24px;
+}
+
 .printer-section {
   margin-top: 64px;
   padding-top: 40px;
@@ -572,6 +576,98 @@
   font-weight: 700;
   line-height: 1.5;
   text-align: center;
+}
+
+.device-notes-section {
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+
+.device-notes-group + .device-notes-group {
+  margin-top: 40px;
+}
+
+.device-notes-group > h3 {
+  margin: 0 0 16px;
+  color: var(--primary);
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+
+.device-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.device-note-card {
+  min-width: 0;
+  padding: 20px;
+  background: #f8fbff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.device-note-card--wide {
+  grid-column: 1 / -1;
+  margin-top: 24px;
+}
+
+.device-note-card h4 {
+  margin: 0 0 12px;
+  color: var(--primary);
+  font-size: 1.08rem;
+}
+
+.device-note-card p,
+.device-note-card ul {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+.device-note-card ul {
+  display: grid;
+  gap: 8px;
+  padding-left: 20px;
+}
+
+.device-note-card p + ul {
+  margin-top: 12px;
+}
+
+.device-note-card strong {
+  color: #0757a6;
+}
+
+.device-table-wrap {
+  overflow-x: auto;
+}
+
+.device-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text);
+  line-height: 1.6;
+  text-align: left;
+}
+
+.device-comparison-table th,
+.device-comparison-table td {
+  padding: 12px;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.device-comparison-table thead th {
+  background: #eef6f5;
+  color: var(--primary);
+}
+
+.device-comparison-table tbody th {
+  min-width: 110px;
+  color: var(--primary);
 }
 
 .unit-actions {
@@ -692,6 +788,24 @@
   .printer-section {
     margin-top: 48px;
     padding-top: 28px;
+  }
+
+  .device-notes-section {
+    margin-top: 48px;
+    padding-top: 28px;
+  }
+
+  .device-notes-group + .device-notes-group {
+    margin-top: 32px;
+  }
+
+  .device-notes-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .device-note-card--wide {
+    grid-column: auto;
   }
 
   .printer-video-gallery {
