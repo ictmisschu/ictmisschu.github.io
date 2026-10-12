@@ -6,7 +6,7 @@
 <style>
 /* Layout: one column. The physical bit cards are the hero, controls sit above them, readouts and working below. */
 :root{
-  --bg:#E8EAED; --surface:#F6F7F8; --ink:#111316; --muted:#5A616A; --line:#CBD0D6;
+  --bg:#eef6f5; --surface:#e6eeed; --ink:#10261A; --muted:#3E6049; --line:#5b7a61;
   --accent:#1F4FFF; --accent-soft:rgba(31,79,255,.12); --neg:#C8281F;
   --card-edge:#111316;
   --on-bg:#FFFFFF; --on-val:#000000; --on-small:#777777; --on-pow:#1A1A1A; --neg-on:#C8281F;
@@ -16,18 +16,7 @@
   --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
   --font-math:'STIX Two Text','Latin Modern Math',Georgia,serif;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0C0D0F; --surface:#16181B; --ink:#F2F3F4; --muted:#9AA1A9; --line:#2A2D32;
-    --accent:#7C95FF; --accent-soft:rgba(124,149,255,.2); --neg:#FF6B60; --card-edge:#4A4F57;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0C0D0F; --surface:#16181B; --ink:#F2F3F4; --muted:#9AA1A9; --line:#2A2D32;
-  --accent:#7C95FF; --accent-soft:rgba(124,149,255,.2); --neg:#FF6B60; --card-edge:#4A4F57;
-  color-scheme:dark;
-}
+/* single light-green look in every theme */
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--font-body);padding-inline:16px;padding-block:24px 56px}
 .app{max-width:1040px;margin:0 auto}
