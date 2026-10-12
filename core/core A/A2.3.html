@@ -3,38 +3,318 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HKDSE ICT - A2.3 數據表示</title>
+    <title>HKDSE ICT - A2.3 數據表示與數字系統</title>
     <link rel="stylesheet" href="../../css/styles.css" />
     <link rel="stylesheet" href="../../css/core.css" />
+    <link rel="stylesheet" href="../../css/button.css" />
     <script src="../../navigation.js" defer></script>
     <script src="../../footer.js" defer></script>
   </head>
   <body>
     <div id="site-navigation"></div>
 
-    <main class="unit-page unit-page-a chapter-page">
+    <main class="unit-page unit-page-a chapter-page number-systems-page">
       <section class="unit-hero" aria-labelledby="chapter-title">
         <div class="unit-hero-copy">
           <p class="unit-eyebrow">CORE A · A2.3</p>
-          <h1 id="chapter-title">數據表示</h1>
-          <p class="unit-hero-en" lang="en">Data Representation</p>
-          <p class="unit-hero-summary">了解電腦如何以數碼形式表示不同類型的數據，以及數據表示方式如何影響儲存與處理。</p>
-        </div>
+          <h1 id="chapter-title">數據表示與數字系統</h1>
+          <p class="unit-hero-en" lang="en">Data Representation &amp; Number Systems</p>
+          <p class="unit-hero-summary">從電腦只懂「0」和「1」開始，學習位元、二進制、二補碼與十六進制，並掌握常見的數字轉換方法。</p>
+            <!-- <div ontouchstart="">
+              <div class="button">
+                <a href="./Binary Cards.html" target="_blank">二進制位元卡</a>
+              </div>
+            </div>  -->
+            <div class="wrapper">
+              <a class="cta" href="./Binary Cards.html" target="_blank">
+                <span>二進制位元卡</span>
+                <span>
+                  <svg width="66px" height="23px" viewBox="0 0 66 43" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <path class="one" d="M40.1543933,3.89485454 L43.9763149,0.139296592 C44.1708311,-0.0518420739 44.4826329,-0.0518571125 44.6771675,0.139262789 L65.6916134,20.7848311 C66.0855801,21.1718824 66.0911863,21.8050225 65.704135,22.1989893 C65.7000188,22.2031791 65.6958657,22.2073326 65.6916762,22.2114492 L44.677098,42.8607841 C44.4825957,43.0519059 44.1708242,43.0519358 43.9762853,42.8608513 L40.1545186,39.1069479 C39.9575152,38.9134427 39.9546793,38.5968729 40.1481845,38.3998695 C40.1502893,38.3977268 40.1524132,38.395603 40.1545562,38.3934985 L56.9937789,21.8567812 C57.1908028,21.6632968 57.193672,21.3467273 57.0001876,21.1497035 C56.9980647,21.1475418 56.9959223,21.1453995 56.9937605,21.1432767 L40.1545208,4.60825197 C39.9574869,4.41477773 39.9546013,4.09820839 40.1480756,3.90117456 C40.1501626,3.89904911 40.1522686,3.89694235 40.1543933,3.89485454 Z" fill="#FFFFFF"></path>
+                      <path class="two" d="M20.1543933,3.89485454 L23.9763149,0.139296592 C24.1708311,-0.0518420739 24.4826329,-0.0518571125 24.6771675,0.139262789 L45.6916134,20.7848311 C46.0855801,21.1718824 46.0911863,21.8050225 45.704135,22.1989893 C45.7000188,22.2031791 45.6958657,22.2073326 45.6916762,22.2114492 L24.677098,42.8607841 C24.4825957,43.0519059 24.1708242,43.0519358 23.9762853,42.8608513 L20.1545186,39.1069479 C19.9575152,38.9134427 19.9546793,38.5968729 20.1481845,38.3998695 C20.1502893,38.3977268 20.1524132,38.395603 20.1545562,38.3934985 L36.9937789,21.8567812 C37.1908028,21.6632968 37.193672,21.3467273 37.0001876,21.1497035 C36.9980647,21.1475418 36.9959223,21.1453995 36.9937605,21.1432767 L20.1545208,4.60825197 C19.9574869,4.41477773 19.9546013,4.09820839 20.1480756,3.90117456 C20.1501626,3.89904911 20.1522686,3.89694235 20.1543933,3.89485454 Z" fill="#FFFFFF"></path>
+                      <path class="three" d="M0.154393339,3.89485454 L3.97631488,0.139296592 C4.17083111,-0.0518420739 4.48263286,-0.0518571125 4.67716753,0.139262789 L25.6916134,20.7848311 C26.0855801,21.1718824 26.0911863,21.8050225 25.704135,22.1989893 C25.7000188,22.2031791 25.6958657,22.2073326 25.6916762,22.2114492 L4.67709797,42.8607841 C4.48259567,43.0519059 4.17082418,43.0519358 3.97628526,42.8608513 L0.154518591,39.1069479 C-0.0424848215,38.9134427 -0.0453206733,38.5968729 0.148184538,38.3998695 C0.150289256,38.3977268 0.152413239,38.395603 0.154556228,38.3934985 L16.9937789,21.8567812 C17.1908028,21.6632968 17.193672,21.3467273 17.0001876,21.1497035 C16.9980647,21.1475418 16.9959223,21.1453995 16.9937605,21.1432767 L0.15452076,4.60825197 C-0.0425130651,4.41477773 -0.0453986756,4.09820839 0.148075568,3.90117456 C0.150162624,3.89904911 0.152268631,3.89694235 0.154393339,3.89485454 Z" fill="#FFFFFF"></path>
+                    </g>
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </div>
       </section>
 
-      <section class="chapter-section" aria-labelledby="learning-title">
+      <section class="chapter-section number-lesson-section" id="number-systems-overview" aria-labelledby="learning-title">
         <div class="chapter-heading">
           <div>
             <p class="section-eyebrow">A2 / DIGITAL DATA</p>
             <h2 id="learning-title">本節學習重點</h2>
           </div>
-          <p>認識文字、數值、圖像及聲音等資料的數碼表示概念。</p>
+          <p>完成本節後，你應能解釋電腦如何以位元表示數據，並進行常見的進制及有號整數運算。</p>
         </div>
-        <ol class="chapter-list">
-          <li><span class="chapter-number">01</span><h3>認識位元及數碼資料</h3></li>
-          <li><span class="chapter-number">02</span><h3>了解不同類型數據的表示方式</h3></li>
-          <li><span class="chapter-number">03</span><h3>比較表示精確度與所需儲存空間</h3></li>
-        </ol>
+        <ul class="number-learning-list">
+          <li>認識位元、位元組、儲存容量及數據傳輸率</li>
+          <li>運用位值把二進制轉換為十進制，亦能用重複除法作反向轉換</li>
+          <li>計算固定位元長度可表示的無符號及有符號整數範圍</li>
+          <li>以二補碼表示負數，並判斷有號整數運算的溢位</li>
+          <li>使用十六進制簡潔表示二進制數據</li>
+        </ul>
+      </section>
+
+      <section class="chapter-section number-lesson-section" aria-labelledby="binary-world-title">
+        <div class="chapter-heading">
+          <div>
+            <p class="section-eyebrow">FROM SIGNALS TO DATA</p>
+            <h2 id="binary-world-title">為甚麼電腦使用 0 和 1？</h2>
+          </div>
+          <p>電腦電路容易辨認兩種穩定狀態，因此以二進制訊號表示和處理數據。</p>
+        </div>
+        <div class="bit-state-grid">
+          <article class="bit-state-card">
+            <span class="bit-state-value">0</span>
+            <h3>低 / 關 / 假</h3>
+            <p>例如低電壓、關閉的開關，或邏輯值 False。</p>
+          </article>
+          <article class="bit-state-card">
+            <span class="bit-state-value">1</span>
+            <h3>高 / 開 / 真</h3>
+            <p>例如高電壓、開啟的開關，或邏輯值 True。</p>
+          </article>
+          <p class="number-note">一個二進制數位稱為一個<strong>位元（bit）</strong>。把更多位元組合起來，就可以表示數字、文字、圖像及聲音；例如變聲效果會把聲音數據數碼化，再經處理後輸出。</p>
+        </div>
+      </section>
+
+      <section class="chapter-section number-lesson-section" aria-labelledby="history-title">
+        <div class="chapter-heading">
+          <div>
+            <p class="section-eyebrow">A SHORT HISTORY OF COMPUTING</p>
+            <h2 id="history-title">由齒輪到電子電腦</h2>
+          </div>
+          <p>早期的機械計算工具，逐步發展成利用電子訊號處理數據的現代電腦。</p>
+        </div>
+        <div class="number-history-grid">
+          <figure>
+            <img src="../../images/number-systems/pascal-calculator.jpg" alt="帕斯卡於十七世紀設計的齒輪式加法計算器" loading="lazy" />
+            <figcaption><strong>1642｜帕斯卡</strong><span>設計齒輪式加法計算器，協助處理算術。</span></figcaption>
+          </figure>
+          <figure>
+            <img src="../../images/number-systems/leibniz-calculator.jpg" alt="萊布尼茲的步進計算機" loading="lazy" />
+            <figcaption><strong>1673｜萊布尼茲</strong><span>設計可進行加、減、乘、除的機械計算機。</span></figcaption>
+          </figure>
+          <figure>
+            <img src="../../images/number-systems/difference-engine.jpg" alt="巴貝奇設計的差分機模型" loading="lazy" />
+            <figcaption><strong>1820 年代｜巴貝奇</strong><span>提出差分機及分析機設計，成為通用計算機概念的先驅。</span></figcaption>
+          </figure>
+          <figure class="number-history-wide">
+            <img src="../../images/number-systems/computer-generations.jpg" alt="早期 ENIAC 電腦與真空管，展示電子電腦的早期發展" loading="lazy" />
+            <figcaption><strong>電子電腦時代</strong><span>真空管、電晶體、積體電路等技術演進，令電腦逐漸縮小並提升效能。</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="chapter-section number-lesson-section" aria-labelledby="units-title">
+        <div class="chapter-heading">
+          <div>
+            <p class="section-eyebrow">MEASURING DIGITAL DATA</p>
+            <h2 id="units-title">數據單位與傳輸率</h2>
+          </div>
+          <p>儲存容量通常以位元組為基礎；網絡速度則常以每秒傳送的位元數表示。</p>
+        </div>
+        <div class="number-tables-grid">
+          <div class="number-table-wrap">
+            <h3>儲存容量</h3>
+            <table class="number-table">
+              <thead><tr><th scope="col">單位</th><th scope="col">符號</th><th scope="col">換算</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">位元</th><td>bit（b）</td><td>數據的基本單位，只可為 0 或 1</td></tr>
+                <tr><th scope="row">位元組</th><td>Byte（B）</td><td>1 B = 8 bits</td></tr>
+                <tr><th scope="row">千位元組</th><td>KB</td><td>1 KB = 1,024 B</td></tr>
+                <tr><th scope="row">百萬位元組</th><td>MB</td><td>1 MB = 1,024 KB</td></tr>
+                <tr><th scope="row">十億位元組</th><td>GB</td><td>1 GB = 1,024 MB</td></tr>
+              </tbody>
+            </table>
+            <p class="number-table-note">在此課程的二進制容量換算中，KB、MB、GB 每級以 1,024 倍計算。</p>
+          </div>
+          <div class="number-table-wrap">
+            <h3>數據傳輸率</h3>
+            <table class="number-table">
+              <thead><tr><th scope="col">單位</th><th scope="col">換算</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">kbps</th><td>1 kbps = 1,000 bps</td></tr>
+                <tr><th scope="row">Mbps</th><td>1 Mbps = 1,000 kbps</td></tr>
+                <tr><th scope="row">Gbps</th><td>1 Gbps = 1,000 Mbps</td></tr>
+                <tr><th scope="row">Tbps</th><td>1 Tbps = 1,000 Gbps</td></tr>
+              </tbody>
+            </table>
+            <p class="number-table-note">bps 是 bits per second（每秒位元數）。傳輸率常用十進制前綴，每級相差 1,000 倍；注意不要與容量的 1,024 倍混淆。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter-section number-lesson-section" aria-labelledby="bases-title">
+        <div class="chapter-heading">
+          <div>
+            <p class="section-eyebrow">NUMBER SYSTEMS</p>
+            <h2 id="bases-title">認識十進制、二進制與十六進制</h2>
+          </div>
+          <p>數字的右下角標示基數（base），用來說明這個數字採用哪一種進制。</p>
+        </div>
+        <div class="number-table-wrap">
+          <table class="number-table">
+            <thead><tr><th scope="col">進制</th><th scope="col">基數</th><th scope="col">可用數字符號</th><th scope="col">例子</th><th scope="col">常見用途</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">十進制</th><td>10</td><td>0–9</td><td>181<sub>10</sub></td><td>日常數值</td></tr>
+              <tr><th scope="row">二進制</th><td>2</td><td>0、1</td><td>10110101<sub>2</sub></td><td>電腦內部表示數據</td></tr>
+              <tr><th scope="row">十六進制</th><td>16</td><td>0–9、A–F</td><td>B4AF<sub>16</sub></td><td>簡潔表示二進制資料，例如色彩值</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <article class="number-explanation-card">
+          <h3>位值取決於基數</h3>
+          <p>一個數字的每一位，代表該數字乘以基數的某個次方。由最右邊開始，位值依次為基數的 0 次方、1 次方、2 次方……</p>
+          <p class="number-formula">10110101<sub>2</sub> = 1×2<sup>7</sup> + 0×2<sup>6</sup> + 1×2<sup>5</sup> + 1×2<sup>4</sup> + 0×2<sup>3</sup> + 1×2<sup>2</sup> + 0×2<sup>1</sup> + 1×2<sup>0</sup> = <strong>181<sub>10</sub></strong></p>
+        </article>
+      </section>
+
+      <section class="chapter-section number-lesson-section" aria-labelledby="conversion-title">
+        <div class="chapter-heading">
+          <div>
+            <p class="section-eyebrow">BINARY CONVERSION</p>
+            <h2 id="conversion-title">二進制與十進制互換</h2>
+          </div>
+          <p>使用位值相加可把二進制轉為十進制；反向轉換則可連續除以 2。</p>
+        </div>
+        <div class="number-conversion-grid">
+          <article class="number-explanation-card">
+            <h3>二進制 → 十進制</h3>
+            <p>把每個二進制數位乘以其對應的 2 次方，再把結果相加。</p>
+            <p class="number-formula">10110101<sub>2</sub><br />= 128 + 0 + 32 + 16 + 0 + 4 + 0 + 1<br /><strong>= 181<sub>10</sub></strong></p>
+          </article>
+          <article class="number-explanation-card">
+            <h3>十進制 → 二進制</h3>
+            <p>將整數反覆除以 2，記下每次的餘數；由最後一個餘數向上讀回，即得二進制數字。</p>
+            <p class="number-formula">45<sub>10</sub> = 101101<sub>2</sub><br />若要用 8 位元表示，前面補零：<strong>00101101<sub>2</sub></strong></p>
+            <figure class="number-diagram">
+              <img src="../../images/number-systems/decimal-to-binary.png" alt="45 連續除以 2，將餘數由下至上讀出二進制 101101" loading="lazy" />
+              <figcaption>重複除以 2：餘數由下至上讀出。</figcaption>
+            </figure>
+          </article>
+        </div>
+      </section>
+
+      <section class="chapter-section number-lesson-section" aria-labelledby="integer-range-title">
+        <div class="chapter-heading">
+          <div>
+            <p class="section-eyebrow">BIT PATTERNS &amp; INTEGER RANGES</p>
+            <h2 id="integer-range-title">位元數與整數範圍</h2>
+          </div>
+          <p>固定的位元數只能組成有限種樣式；是否保留符號位，會改變可表示的數值範圍。</p>
+        </div>
+        <div class="number-range-grid">
+          <article class="number-explanation-card">
+            <h3>無符號整數</h3>
+            <p>所有位元都表示數值，不能表示負數。</p>
+            <p class="number-formula">N 位元可表示 <strong>0 至 2<sup>N</sup> − 1</strong></p>
+            <p>例如 3 位元共有 2<sup>3</sup> = 8 種樣式，範圍是 000<sub>2</sub>（0）至 111<sub>2</sub>（7）。</p>
+          </article>
+          <article class="number-explanation-card">
+            <h3>有號整數（二補碼）</h3>
+            <p>最高位元的權值為負，其餘位元的權值為正，因此可以表示正數、零和負數。</p>
+            <p class="number-formula">N 位元可表示 <strong>−2<sup>N−1</sup> 至 2<sup>N−1</sup> − 1</strong></p>
+            <p>例如 3 位元的範圍為 −4 至 3；8 位元的範圍為 −128 至 127。</p>
+          </article>
+        </div>
+        <div class="number-note"><strong>記住：</strong>N 個位元共有 2<sup>N</sup> 種不同組合。使用二補碼時，這些組合分配給有號整數；最左邊一位是 1 表示負數，為 0 則表示零或正數。</div>
+      </section>
+
+      <section class="chapter-section number-lesson-section" aria-labelledby="twos-complement-title">
+        <div class="chapter-heading">
+          <div>
+            <p class="section-eyebrow">SIGNED INTEGER REPRESENTATION</p>
+            <h2 id="twos-complement-title">二補碼：如何表示負數？</h2>
+          </div>
+          <p>二補碼讓電腦能用同一套加法電路處理有號數的加法與減法。</p>
+        </div>
+        <div class="number-explanation-card">
+          <h3>求出負數的二補碼</h3>
+          <ol class="number-steps">
+            <li>先把正數寫成指定位元長度的二進制。</li>
+            <li>把每一位反轉（0 變 1、1 變 0），得到一補碼。</li>
+            <li>將一補碼加 1，得到二補碼。</li>
+          </ol>
+          <p class="number-formula">以 8 位元表示 −45：<br />+45 = 00101101 → 反轉 = 11010010 → 加 1 = <strong>11010011</strong></p>
+          <p>因此，−45 的 8 位元二補碼是 11010011<sub>2</sub>。求二補碼前，要先確認正數已補足指定位元數。</p>
+        </div>
+        <div class="number-overflow-grid">
+          <article class="number-explanation-card">
+            <h3>有號運算溢位：3 + 5</h3>
+            <p>以 4 位元二補碼計算，3 = 0011、5 = 0101；相加得到 1000。這個樣式代表 −8，但正確答案 +8 超出 4 位元範圍 −8 至 +7，因此發生溢位。</p>
+            <figure class="number-diagram">
+              <img src="../../images/number-systems/positive-overflow.png" alt="四位元有號整數計算 3 加 5 得到 1000，結果超出表示範圍" loading="lazy" />
+              <figcaption>兩個正數相加，結果卻變成負數：發生溢位。</figcaption>
+            </figure>
+          </article>
+          <article class="number-explanation-card">
+            <h3>有號運算溢位：−4 + −6</h3>
+            <p>−4 = 1100、−6 = 1010；保留 4 位元相加得到 0110（+6），但正確答案 −10 超出範圍。兩個負數相加後變成正數，同樣代表溢位。</p>
+            <figure class="number-diagram">
+              <img src="../../images/number-systems/negative-overflow.png" alt="四位元有號整數計算負 4 加負 6，結果超出表示範圍" loading="lazy" />
+              <figcaption>兩個負數相加，結果卻變成正數：發生溢位。</figcaption>
+            </figure>
+          </article>
+        </div>
+        <div class="number-note"><strong>辨別溢位：</strong>無符號數的運算若超出範圍，會出現進位或借位；二補碼有號數則要看運算前後的符號及結果是否超出可表示範圍，不能只靠「有沒有多出一位」判斷。</div>
+      </section>
+
+      <section class="chapter-section number-lesson-section" aria-labelledby="hex-title">
+        <div class="chapter-heading">
+          <div>
+            <p class="section-eyebrow">HEXADECIMAL</p>
+            <h2 id="hex-title">十六進制：讓二進制更簡潔</h2>
+          </div>
+          <p>因為 16 = 2<sup>4</sup>，每一個十六進制數字剛好對應 4 個二進制位元。</p>
+        </div>
+        <div class="number-explanation-card">
+          <h3>十六進制符號</h3>
+          <p>十六進制使用 0–9 表示十進制的 0–9，再以 A、B、C、D、E、F 分別表示十進制的 10、11、12、13、14、15。</p>
+          <div class="number-table-wrap">
+            <table class="number-table hex-table">
+              <thead><tr><th scope="col">十進制</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">11</th><th scope="col">12</th><th scope="col">13</th><th scope="col">14</th><th scope="col">15</th></tr></thead>
+              <tbody><tr><th scope="row">十六進制</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>A</td><td>B</td><td>C</td><td>D</td><td>E</td><td>F</td></tr></tbody>
+            </table>
+          </div>
+          <p>轉換時由右至左，每 4 個二進制位元分成一組，再把每組換成一個十六進制數字；位元不足 4 位時，可在最左邊補 0。</p>
+        </div>
+        <div class="number-conversion-grid">
+          <article class="number-explanation-card">
+            <h3>十六進制 → 十進制</h3>
+            <p>每一位乘以 16 的相應次方，再把各位的值相加。</p>
+            <p class="number-formula">B4AF<sub>16</sub><br />= 11×16<sup>3</sup> + 4×16<sup>2</sup> + 10×16<sup>1</sup> + 15×16<sup>0</sup><br />= 45056 + 1024 + 160 + 15<br /><strong>= 46255<sub>10</sub></strong></p>
+          </article>
+          <article class="number-explanation-card">
+            <h3>十進制 → 十六進制</h3>
+            <p>反覆除以 16，記下餘數，並由下至上讀出；10–15 的餘數分別改寫為 A–F。</p>
+            <p class="number-formula">54625<sub>10</sub> = <strong>D561<sub>16</sub></strong></p>
+            <figure class="number-diagram">
+              <img src="../../images/number-systems/decimal-to-hex.png" alt="將 54625 連續除以 16，餘數由下至上讀出 D561" loading="lazy" />
+              <figcaption>連續除以 16，餘數由下至上讀出。</figcaption>
+            </figure>
+          </article>
+        </div>
+      </section>
+
+      <section class="chapter-section number-lesson-section" aria-labelledby="recap-title">
+        <div class="chapter-heading">
+          <div>
+            <p class="section-eyebrow">QUICK RECAP</p>
+            <h2 id="recap-title">重點回顧</h2>
+          </div>
+        </div>
+        <ul class="number-recap-list">
+          <li>位元是最基本的數據單位；電腦以 0 和 1 的組合表示及處理數據。</li>
+          <li>二進制轉十進制用位值相加；十進制轉二進制或十六進制則可重複除以基數。</li>
+          <li>N 位元有 2<sup>N</sup> 種樣式；無符號整數範圍為 0 至 2<sup>N</sup>−1。</li>
+          <li>N 位元二補碼範圍為 −2<sup>N−1</sup> 至 2<sup>N−1</sup>−1；反轉所有位元再加 1 可求負數的二補碼。</li>
+          <li>一個十六進制數字代表 4 個二進制位元；計算時須檢查結果是否超出所分配的位元範圍。</li>
+        </ul>
       </section>
 
       <nav class="unit-actions" aria-label="章節導覽">

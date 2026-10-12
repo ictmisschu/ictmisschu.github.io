@@ -907,3 +907,282 @@
     font-size: 1rem;
   }
 }
+
+.number-lesson-section {
+  margin-top: 64px;
+}
+
+.number-learning-list,
+.number-recap-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 24px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.bit-state-grid,
+.number-history-grid,
+.number-tables-grid,
+.number-conversion-grid,
+.number-range-grid,
+.number-overflow-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.bit-state-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bit-state-card,
+.number-explanation-card,
+.number-history-grid figure,
+.number-table-wrap {
+  min-width: 0;
+  padding: 22px;
+  background: #f8fbff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.bit-state-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 14px;
+}
+
+.bit-state-value {
+  display: grid;
+  grid-row: span 2;
+  width: 48px;
+  aspect-ratio: 1;
+  place-items: center;
+  background: #e5f4f2;
+  border-radius: 50%;
+  color: #137b7a;
+  font-size: 1.65rem;
+  font-weight: 800;
+}
+
+.bit-state-card h3,
+.number-explanation-card h3,
+.number-table-wrap h3 {
+  margin: 0 0 10px;
+  color: var(--primary);
+  font-size: 1.15rem;
+}
+
+.bit-state-card p,
+.number-explanation-card p,
+.number-table-note {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+.bit-state-card p {
+  grid-column: 2;
+}
+
+.number-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 18px 20px;
+  background: #eef6f5;
+  border-left: 4px solid #137b7a;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+.number-history-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.number-history-grid figure {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+}
+
+.number-history-grid img {
+  display: block;
+  width: 100%;
+  height: 190px;
+  object-fit: contain;
+  background: #fff6c0;
+  border-radius: 8px;
+}
+
+.number-history-grid figcaption {
+  display: grid;
+  gap: 6px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.number-history-grid figcaption strong {
+  color: var(--primary);
+}
+
+.number-history-wide {
+  grid-column: 1 / -1;
+}
+
+.number-history-grid .number-history-wide img {
+  height: auto;
+  max-height: 320px;
+}
+
+.number-tables-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.number-table-wrap {
+  overflow-x: auto;
+  padding: 18px;
+}
+
+.number-table-wrap h3 {
+  margin-bottom: 14px;
+}
+
+.number-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text);
+  line-height: 1.6;
+  text-align: left;
+}
+
+.number-table th,
+.number-table td {
+  min-width: 82px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.number-table thead th {
+  background: #eef6f5;
+  color: var(--primary);
+}
+
+.number-table tbody th {
+  color: var(--primary);
+}
+
+.number-table-note {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.number-explanation-card {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.number-explanation-card p + p {
+  margin-top: 0;
+}
+
+.number-formula {
+  padding: 14px 16px;
+  overflow-wrap: anywhere;
+  background: #eef6f5;
+  border-radius: 8px;
+  color: #173c55 !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  line-height: 1.9 !important;
+}
+
+.number-explanation-card ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 24px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.number-conversion-grid,
+.number-range-grid,
+.number-overflow-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.number-diagram {
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.number-diagram img {
+  display: block;
+  max-width: 100%;
+  max-height: 300px;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.number-diagram figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.number-overflow-grid {
+  margin-top: 20px;
+}
+
+.hex-table {
+  min-width: 920px;
+  text-align: center;
+}
+
+.number-recap-list li::marker {
+  color: #137b7a;
+}
+
+@media (max-width: 760px) {
+  .number-lesson-section {
+    margin-top: 48px;
+  }
+
+  .number-history-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .number-tables-grid,
+  .number-conversion-grid,
+  .number-range-grid,
+  .number-overflow-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .bit-state-grid,
+  .number-history-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .number-history-wide {
+    grid-column: auto;
+  }
+
+  .bit-state-card,
+  .number-explanation-card,
+  .number-history-grid figure {
+    padding: 10px;
+  }
+
+  .number-table-wrap {
+    padding: 10px;
+  }
+}

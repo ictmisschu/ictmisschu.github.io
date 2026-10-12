@@ -1,0 +1,826 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>二進制位元卡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=STIX+Two+Text:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one column. The physical bit cards are the hero, controls sit above them, readouts and working below. */
+:root{
+  --bg:#E8EAED; --surface:#F6F7F8; --ink:#111316; --muted:#5A616A; --line:#CBD0D6;
+  --accent:#1F4FFF; --accent-soft:rgba(31,79,255,.12); --neg:#C8281F;
+  --card-edge:#111316;
+  --on-bg:#FFFFFF; --on-val:#000000; --on-small:#777777; --on-pow:#1A1A1A; --neg-on:#C8281F;
+  --off-bg:#000000; --off-val:#A6A6A6; --off-small:#FFFFFF; --off-pow:#8A8A8A; --neg-off:#FF6B60;
+  --font-display:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --font-body:'Noto Sans TC','PingFang TC','Microsoft JhengHei',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --font-math:'STIX Two Text','Latin Modern Math',Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C0D0F; --surface:#16181B; --ink:#F2F3F4; --muted:#9AA1A9; --line:#2A2D32;
+    --accent:#7C95FF; --accent-soft:rgba(124,149,255,.2); --neg:#FF6B60; --card-edge:#4A4F57;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C0D0F; --surface:#16181B; --ink:#F2F3F4; --muted:#9AA1A9; --line:#2A2D32;
+  --accent:#7C95FF; --accent-soft:rgba(124,149,255,.2); --neg:#FF6B60; --card-edge:#4A4F57;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--font-body);padding-inline:16px;padding-block:24px 56px}
+.app{max-width:1040px;margin:0 auto}
+h1{font:900 clamp(1.7rem,4.5vw,2.5rem)/1.1 var(--font-display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{margin:.4rem 0 0;color:var(--muted);max-width:42ch}
+.top{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;color:var(--muted);font:500 .875rem var(--font-body);padding:.55rem .95rem;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button:focus-visible,.btn:focus-visible,.tabs button:focus-visible,select:focus-visible,input:focus-visible,.card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;gap:1.5rem;border-bottom:1px solid var(--line);margin-block:1.5rem 1.75rem}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;padding:.6rem 0;font:700 1rem var(--font-body);color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.block{margin-bottom:1.9rem}
+.h{font:700 .78rem var(--font-body);letter-spacing:.1em;color:var(--muted);margin:0 0 .65rem}
+.hint{color:var(--muted);font-size:.875rem;margin:.75rem 0 0;max-width:68ch}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1rem 1.1rem}
+
+/* big bit cards, modelled on the printed set: white = 1, black = 0 */
+.cards{display:grid;grid-template-columns:repeat(var(--cols,8),minmax(0,132px));gap:10px;justify-content:start}
+.cards[data-n="4"]{--cols:4}.cards[data-n="8"]{--cols:8}.cards[data-n="16"]{--cols:8}
+@media (max-width:640px){.cards[data-n="8"],.cards[data-n="16"]{--cols:4}}
+.card{position:relative;container-type:inline-size;aspect-ratio:4/5;display:block;padding:0;margin:0;border:2px solid var(--card-edge);border-radius:6px;background:var(--on-bg);color:var(--on-val);font:inherit;text-align:inherit;overflow:hidden}
+.card[data-on="0"]{background:var(--off-bg)}
+.card .cd-bit{position:absolute;left:11cqw;top:8cqw;font:800 13cqw/1 var(--font-display);color:var(--on-small)}
+.card[data-on="0"] .cd-bit{color:var(--off-small)}
+.card .cd-val{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-display);font-weight:900;font-size:calc(min(58,140/var(--len))*1cqw);line-height:1;color:var(--on-val)}
+.card[data-on="0"] .cd-val{color:var(--off-val)}
+.card .cd-pow{position:absolute;left:0;right:0;bottom:7cqw;text-align:center;font:400 17cqw/1 var(--font-math);color:var(--on-pow)}
+.card[data-on="0"] .cd-pow{color:var(--off-pow)}
+.card sup{font-size:.62em;line-height:0;vertical-align:.7em}
+.card.neg .cd-pow{color:var(--neg-on)}
+.card.neg[data-on="0"] .cd-pow{color:var(--neg-off)}
+.card.neg::after{content:"";position:absolute;left:0;right:0;top:0;height:4cqw;background:var(--neg-on)}
+.card.neg[data-on="0"]::after{background:var(--neg-off)}
+button.card{cursor:pointer;transition:transform .12s ease,background-color .15s ease}
+button.card:hover{transform:translateY(-3px)}
+button.card:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){button.card{transition:none}button.card:hover{transform:none}}
+
+.actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.btn{font:500 .875rem var(--font-body);padding:.5rem .85rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:1rem}
+.field{min-width:0}
+.field label,.lbl{display:flex;align-items:center;justify-content:space-between;gap:.5rem;font-weight:700;font-size:.875rem;margin-bottom:.35rem}
+input[type=text],select{width:100%;font:500 1.1rem var(--font-mono);padding:.6rem .75rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+select{font:500 .95rem var(--font-body);width:auto;padding:.6rem .5rem}
+input[aria-invalid="true"]{border-color:var(--neg)}
+.err{color:var(--neg);font-size:.82rem;min-height:1.3em;margin:.3rem 0 0}
+.mini-seg button{padding:.2rem .6rem;font-size:.78rem}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:.75rem}
+.stat{min-width:0}
+.stat .k{font-size:.78rem;color:var(--muted)}
+.stat .v{font:800 1.8rem/1.2 var(--font-display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.stat .v.mono{font:600 1.05rem/1.5 var(--font-mono)}
+.expr{font:500 .95rem/1.7 var(--font-mono);margin:.25rem 0 0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.expr b{font-family:var(--font-body);font-weight:700;margin-right:.5rem}
+
+/* compact tiles for step-by-step working */
+.work{overflow-x:auto;padding-bottom:.25rem}
+.line{display:flex;align-items:center;gap:12px;margin-bottom:.55rem;min-width:calc(6rem + 12px + var(--cols,8) * 30px)}
+.wl{flex:none;width:6rem;font-size:.82rem;color:var(--muted);line-height:1.3}
+.mini{flex:1 1 auto;min-width:calc(var(--cols,8) * 28px);display:grid;grid-template-columns:repeat(var(--cols,8),minmax(26px,64px));gap:4px;justify-content:start}
+.t{position:relative;container-type:inline-size;aspect-ratio:1/1.15;border:1.5px solid var(--card-edge);border-radius:4px;background:var(--on-bg)}
+.t[data-on="0"]{background:var(--off-bg)}
+.t .b{position:absolute;inset:0 0 26% 0;display:grid;place-items:center;font:800 52cqw/1 var(--font-display);color:var(--on-val)}
+.t[data-on="0"] .b{color:var(--off-val)}
+.t .w{position:absolute;left:0;right:0;bottom:6%;text-align:center;font-family:var(--font-mono);font-size:calc(min(24,80/var(--len))*1cqw);color:var(--on-small)}
+.t[data-on="0"] .w{color:var(--off-pow)}
+.t.neg .w{color:var(--neg-on)}
+.t.neg[data-on="0"] .w{color:var(--neg-off)}
+.t.hl{outline:3px solid var(--accent);outline-offset:1px}
+@container (max-width:27px){.t .w{display:none}.t .b{inset:0}}
+.mini.carry{align-items:center}
+.c{display:grid;place-items:center;height:1.7rem;border-radius:4px;font:500 .82rem var(--font-mono);color:var(--muted)}
+.c[data-on="1"]{color:var(--accent);background:var(--accent-soft);font-weight:600}
+.c.ov{outline:2px solid var(--neg);outline-offset:-1px}
+
+.ops{display:flex;flex-wrap:wrap}
+.ops button{font:700 1.15rem var(--font-display);min-width:3.1rem}
+.calc-in{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.25rem}
+.row{display:flex;gap:.5rem;align-items:stretch}
+.row input{min-width:0}
+.echo{font:400 .78rem/1.5 var(--font-mono);color:var(--muted);margin:.3rem 0 0;overflow-wrap:anywhere}
+.eq{font:800 clamp(1.5rem,5vw,2.4rem)/1.2 var(--font-display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;margin:0}
+.flags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
+.flag{font:500 .8rem var(--font-mono);border:1px solid var(--line);border-radius:999px;padding:.25rem .75rem;color:var(--muted);background:var(--surface)}
+.flag[data-on="1"]{color:var(--ink);border-color:var(--ink);font-weight:600}
+.flag[data-kind="warn"][data-on="1"]{color:var(--neg);border-color:var(--neg)}
+.explain p{margin:0 0 .6rem;max-width:70ch}
+.explain p:last-child{margin:0}
+.explain strong{font-weight:700}
+.note{color:var(--muted);font-size:.875rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.6rem}
+.chips span{font-size:.82rem;color:var(--muted);margin-right:.2rem}
+
+/* conversion pairs tab */
+.pairs{display:flex;flex-wrap:wrap;gap:.5rem}
+.pairs .btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.xfer-io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:1rem;align-items:start}
+.swap{margin-top:1.75rem;font-size:1rem}
+@media (max-width:640px){.xfer-io{grid-template-columns:minmax(0,1fr)}.swap{margin-top:0;justify-self:start}}
+.xout{display:block;min-height:3.1rem;padding:.6rem .75rem;border:1px dashed var(--line);border-radius:8px;background:var(--surface);font:600 1.1rem/1.6 var(--font-mono);overflow-wrap:anywhere}
+.tbl-wrap{overflow-x:auto}
+.tbl{border-collapse:collapse;font:500 .9rem var(--font-mono);font-variant-numeric:tabular-nums;margin:0 0 .8rem}
+.tbl th{font:700 .75rem var(--font-body);color:var(--muted);text-align:right;padding:.3rem .9rem;border-bottom:1px solid var(--line)}
+.tbl td{padding:.3rem .9rem;text-align:right}
+.tbl td.rem{font-weight:700;color:var(--accent)}
+.nibs{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.6rem}
+.nib{display:grid;justify-items:center;gap:.15rem;border:1px solid var(--line);border-radius:8px;padding:.6rem .8rem;background:var(--bg);min-width:5.4rem}
+.nb{font:600 1.1rem var(--font-mono)}
+.nr{font:400 .72rem var(--font-mono);color:var(--muted);text-align:center}
+.na{color:var(--muted);line-height:1}
+.nh{font:900 1.8rem/1 var(--font-display);color:var(--accent)}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div>
+      <h1>二進制位元卡</h1>
+      <p class="sub">翻轉位元卡，即時看到二進制、十進制、十六進制和二進制補碼。</p>
+    </div>
+    <div class="seg" id="widthSeg" role="group" aria-label="位元寬度">
+      <button type="button" data-w="4" aria-pressed="false">4 位元</button>
+      <button type="button" data-w="8" aria-pressed="true">8 位元</button>
+      <button type="button" data-w="16" aria-pressed="false">16 位元</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="功能">
+    <button type="button" role="tab" data-tab="convert" aria-selected="true">轉換</button>
+    <button type="button" role="tab" data-tab="xfer" aria-selected="false">互換</button>
+    <button type="button" role="tab" data-tab="twos" aria-selected="false">補碼</button>
+    <button type="button" role="tab" data-tab="calc" aria-selected="false">計算</button>
+  </nav>
+
+  <section id="p-convert" role="tabpanel">
+    <div class="block">
+      <div class="lbl">解讀方式</div>
+      <div class="seg" id="decSeg" role="group" aria-label="數值解讀方式" style="margin-bottom:1rem">
+        <button type="button" data-mode="signed" aria-pressed="true">有號數 (補碼)</button>
+        <button type="button" data-mode="unsigned" aria-pressed="false">無號數</button>
+      </div>
+      <div class="cards" id="cvCards"></div>
+      <p class="hint" id="cvHint"></p>
+      <div class="actions" id="cvActions"></div>
+    </div>
+    <div class="block">
+      <h2 class="h">輸入任何一種進制</h2>
+      <div class="fields">
+        <div class="field">
+          <label for="inBin">二進制</label>
+          <input type="text" id="inBin" autocomplete="off" spellcheck="false">
+          <p class="err" id="errBin" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="inDec" id="lblDec">十進制 (有號)</label>
+          <input type="text" id="inDec" autocomplete="off" spellcheck="false" inputmode="text">
+          <p class="err" id="errDec" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="inHex">十六進制</label>
+          <input type="text" id="inHex" autocomplete="off" spellcheck="false">
+          <p class="err" id="errHex" role="alert"></p>
+        </div>
+      </div>
+    </div>
+    <div class="block box">
+      <div class="stats">
+        <div class="stat"><div class="k">二進制補碼 (有號數)</div><div class="v" id="rdSigned"></div></div>
+        <div class="stat"><div class="k">原碼 (無號數)</div><div class="v" id="rdUnsigned"></div></div>
+        <div class="stat"><div class="k">這個位元寬度可表示</div><div class="v mono" id="rdRange"></div></div>
+      </div>
+      <p class="expr" id="exSigned"></p>
+      <p class="expr" id="exUnsigned"></p>
+      <p class="hint" id="exHint"></p>
+    </div>
+  </section>
+
+  <section id="p-xfer" role="tabpanel" hidden>
+    <div class="block">
+      <h2 class="h">選擇轉換</h2>
+      <div class="pairs" id="pairSeg" role="group" aria-label="轉換類型">
+        <button type="button" class="btn" data-pair="bd" aria-pressed="true">二進制 ⇄ 十進制</button>
+        <button type="button" class="btn" data-pair="bh" aria-pressed="false">二進制 ⇄ 十六進制</button>
+        <button type="button" class="btn" data-pair="dc" aria-pressed="false">十進制 ⇄ 二進制補碼</button>
+      </div>
+    </div>
+    <div class="block">
+      <div class="xfer-io">
+        <div class="field">
+          <label for="xIn" id="xInLbl"></label>
+          <input type="text" id="xIn" autocomplete="off" spellcheck="false">
+          <p class="err" id="xErr" role="alert"></p>
+          <p class="echo" id="xHint"></p>
+        </div>
+        <button type="button" class="btn swap" id="xSwap" title="把結果當成輸入，反方向轉換">⇄ 交換方向</button>
+        <div class="field">
+          <div class="lbl" id="xOutLbl"></div>
+          <output class="xout" id="xOut" for="xIn"></output>
+        </div>
+      </div>
+    </div>
+    <div class="block box">
+      <h2 class="h">轉換步驟</h2>
+      <div class="work" id="xSteps"></div>
+    </div>
+    <div class="actions"><button type="button" class="btn" id="xLoad">用位元卡查看這個數</button></div>
+  </section>
+
+  <section id="p-twos" role="tabpanel" hidden>
+    <div class="block">
+      <div class="field" style="max-width:360px">
+        <label for="inTc">有號十進制數</label>
+        <input type="text" id="inTc" autocomplete="off" spellcheck="false" value="-42">
+        <p class="err" id="tcErr" role="alert"></p>
+      </div>
+      <div class="chips" id="tcEx"></div>
+    </div>
+    <div class="block box">
+      <div class="work" id="tcOut"></div>
+    </div>
+    <div class="actions"><button type="button" class="btn" id="tcLoad">用位元卡查看這個數</button></div>
+  </section>
+
+  <section id="p-calc" role="tabpanel" hidden>
+    <div class="block">
+      <div class="calc-in">
+        <div class="field">
+          <label for="inA"><span>A</span>
+            <select id="baseA" aria-label="A 的進制"><option value="10">十進制</option><option value="2">二進制</option><option value="16">十六進制</option></select>
+          </label>
+          <input type="text" id="inA" autocomplete="off" spellcheck="false">
+          <p class="err" id="errA" role="alert"></p>
+          <p class="echo" id="echoA"></p>
+        </div>
+        <div class="field">
+          <label for="inB"><span>B</span>
+            <select id="baseB" aria-label="B 的進制"><option value="10">十進制</option><option value="2">二進制</option><option value="16">十六進制</option></select>
+          </label>
+          <input type="text" id="inB" autocomplete="off" spellcheck="false">
+          <p class="err" id="errB" role="alert"></p>
+          <p class="echo" id="echoB"></p>
+        </div>
+      </div>
+      <div class="lbl" style="margin-top:.5rem">運算</div>
+      <div class="seg ops" id="opSeg" role="group" aria-label="運算"></div>
+      <p class="hint">預設是 100 + 50，用 8 位元計算會溢位，可以看看為什麼。</p>
+    </div>
+    <div id="calcOut"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const B=BigInt;
+
+const st={n:8,bits:0b11010110n,decMode:'signed',tab:'convert',
+  cs:{a:100n,b:50n,baseA:10,baseB:10,op:'+'}};
+
+const W=()=>B(st.n);
+const MOD=()=>1n<<W();
+const MASK=()=>MOD()-1n;
+const SIGN=()=>1n<<(W()-1n);
+const wrap=v=>((v%MOD())+MOD())%MOD();
+const sgn=x=>(x&SIGN())?x-MOD():x;
+const bin=x=>x.toString(2).padStart(st.n,'0');
+const grp=s=>s.replace(/(.{4})(?=.)/g,'$1 ');
+const hex=x=>x.toString(16).toUpperCase().padStart(st.n/4,'0');
+const bit=(x,i)=>Number((x>>B(i))&1n);
+const wlabel=i=>{const w=(1n<<B(i)).toString();return i===st.n-1?'-'+w:w;};
+const lo=()=>-SIGN();
+const hiS=()=>SIGN()-1n;
+const hiU=()=>MASK();
+const rangeTxt=()=>'有號 '+lo()+' ~ '+hiS()+'\n無號 0 ~ '+hiU();
+
+/* ---------- parsing ---------- */
+function parseNum(str,base){
+  let s=String(str).trim().replace(/[\s_]/g,'');
+  if(!s) return {err:'請輸入數值'};
+  let neg=false;
+  if(s[0]==='-'){neg=true;s=s.slice(1);}else if(s[0]==='+'){s=s.slice(1);}
+  if(base===2) s=s.replace(/^0b/i,'');
+  if(base===16) s=s.replace(/^0x/i,'');
+  const re=base===2?/^[01]+$/:base===10?/^\d+$/:/^[0-9a-f]+$/i;
+  if(!s||!re.test(s)) return {err:base===2?'二進制只可輸入 0 和 1':base===10?'十進制只可輸入數字 0 至 9':'十六進制只可輸入 0 至 9 和 A 至 F'};
+  let v=base===10?B(s):B((base===2?'0b':'0x')+s);
+  if(neg) v=-v;
+  return {v:v};
+}
+function toBits(v){
+  if(v<lo()||v>hiU()) return {err:st.n+' 位元放不下這個數。範圍是 有號 '+lo()+' ~ '+hiS()+'，無號 0 ~ '+hiU()};
+  return {bits:wrap(v)};
+}
+function fmt(b,base){
+  return base===2?grp(bin(b)):base===16?hex(b):String(sgn(b));
+}
+function expr(b,signed){
+  const t=[];
+  for(let i=st.n-1;i>=0;i--){
+    if(bit(b,i)){const w=1n<<B(i);t.push(signed&&i===st.n-1?-w:w);}
+  }
+  if(!t.length) return '0 = 0';
+  const s=t.map((v,k)=>k===0?String(v):(v<0n?' - '+(-v):' + '+v)).join('');
+  return s+' = '+(signed?sgn(b):b);
+}
+
+/* ---------- big cards ---------- */
+function cardsHTML(interactive,signed){
+  if(signed===undefined) signed=true;
+  let h='';
+  for(let i=st.n-1;i>=0;i--){
+    const neg=signed&&i===st.n-1,l=neg?wlabel(i):(1n<<B(i)).toString(),tag=interactive?'button':'div';
+    h+='<'+tag+(interactive?' type="button"':'')+' class="card'+(neg?' neg':'')+'" data-i="'+i+'" data-on="0" style="--len:'+l.length+'">'+
+      '<span class="cd-bit">0</span><span class="cd-val">'+l+'</span>'+
+      '<span class="cd-pow">'+(neg?'−':'')+'2<sup>'+i+'</sup></span></'+tag+'>';
+  }
+  return h;
+}
+function paintCards(el,b){
+  $$('.card',el).forEach(c=>{
+    const i=+c.dataset.i,v=bit(b,i);
+    c.dataset.on=String(v);
+    $('.cd-bit',c).textContent=String(v);
+    if(c.tagName==='BUTTON'){
+      c.setAttribute('aria-pressed',v?'true':'false');
+      c.setAttribute('aria-label','位元 '+i+'，權重 '+$('.cd-val',c).textContent+'，目前是 '+v);
+    }
+  });
+}
+function setupCards(el,interactive,signed){
+  el.dataset.n=String(st.n);
+  el.innerHTML=cardsHTML(interactive,signed);
+}
+
+/* ---------- compact tiles ---------- */
+function miniHTML(b,opt){
+  opt=opt||{};
+  const lead=opt.lead===undefined?null:opt.lead;
+  const hl=opt.hl||0n;
+  const cols=st.n+(lead!==null?1:0);
+  let h='<div class="mini" style="--cols:'+cols+'">';
+  if(lead!==null) h+='<div class="lead">'+lead+'</div>';
+  for(let i=st.n-1;i>=0;i--){
+    const uns=!!opt.unsigned;
+    const l=uns?(1n<<B(i)).toString():wlabel(i),v=bit(b,i),on=(hl>>B(i))&1n;
+    h+='<div class="t'+(on?' hl':'')+(!uns&&i===st.n-1?' neg':'')+'" data-on="'+v+'" style="--len:'+l.length+'"><span class="b">'+v+'</span><span class="w">'+l+'</span></div>';
+  }
+  return h+'</div>';
+}
+function carryHTML(cin,cout,ov){
+  let h='<div class="mini carry" style="--cols:'+(st.n+1)+'"><div class="c'+(ov?' ov':'')+'" data-on="'+cout+'">'+cout+'</div>';
+  for(let i=st.n-1;i>=0;i--){
+    h+='<div class="c'+(ov&&i===st.n-1?' ov':'')+'" data-on="'+cin[i]+'">'+cin[i]+'</div>';
+  }
+  return h+'</div>';
+}
+const line=(label,inner)=>'<div class="line"><div class="wl">'+label+'</div>'+inner+'</div>';
+
+/* ---------- convert tab ---------- */
+const actions=[
+  ['全部歸零',()=>0n,'所有位元變成 0'],
+  ['全部設為 1',()=>MASK(),'所有位元變成 1'],
+  ['反轉',b=>~b&MASK(),'0 變 1，1 變 0 (1 的補數)'],
+  ['取負',b=>wrap(~b+1n),'反轉所有位元再加 1，得到 -x 的補碼'],
+  ['+ 1',b=>wrap(b+1n),'加 1'],
+  ['- 1',b=>wrap(b-1n),'減 1'],
+  ['左移 ×2',b=>wrap(b<<1n),'全部向左移一位，相當於乘 2'],
+  ['右移 ÷2',b=>(b>>1n)|(st.decMode==='signed'?(b&SIGN()):0n),'全部向右移一位，相當於除以 2。有號數時符號位保持不變，無號數時最左邊補 0']
+];
+function renderConvert(skip){
+  const b=st.bits;
+  paintCards($('#cvCards'),b);
+  const set=(id,val)=>{if(skip!==id)$('#'+id).value=val;};
+  set('inBin',grp(bin(b)));
+  set('inHex',hex(b));
+  set('inDec',String(st.decMode==='signed'?sgn(b):b));
+  if(!skip){
+    ['Bin','Dec','Hex'].forEach(k=>{$('#err'+k).textContent='';$('#in'+k).removeAttribute('aria-invalid');});
+  }
+  $('#rdSigned').textContent=String(sgn(b));
+  $('#rdUnsigned').textContent=String(b);
+  $('#rdRange').textContent=rangeTxt();
+  $('#rdRange').style.whiteSpace='pre-line';
+  $('#exSigned').innerHTML='<b>有號</b>'+expr(b,true);
+  $('#exUnsigned').innerHTML='<b>無號</b>'+expr(b,false);
+  const sg=st.decMode==='signed';
+  $('#lblDec').textContent=sg?'十進制 (有號)':'十進制 (無號)';
+  $('#cvHint').textContent=sg
+    ?'點擊卡片翻面。白卡是 1，黑卡是 0。最左邊有紅色標記的卡是符號位，權重是 '+wlabel(st.n-1)+'，所以它是 1 的時候，整個數就是負數。'
+    :'點擊卡片翻面。白卡是 1，黑卡是 0。無號數沒有符號位，最左邊的卡權重是正的 '+(1n<<B(st.n-1))+'，整個數一定是 0 或正數。';
+  $('#exHint').textContent=sg
+    ?'補碼把最高位的權重改成 '+wlabel(st.n-1)+'。把亮起 (值為 1) 的卡片權重加起來，就是有號數的值。'
+    :'無號數的每個權重都是正的。把亮起 (值為 1) 的卡片權重加起來，就是無號數的值。';
+}
+function wireConvert(){
+  $('#cvCards').addEventListener('click',e=>{
+    const c=e.target.closest('.card');
+    if(!c) return;
+    st.bits^=1n<<B(c.dataset.i);
+    renderConvert();
+  });
+  $('#cvActions').innerHTML=actions.map((a,i)=>'<button type="button" class="btn" data-a="'+i+'" title="'+a[2]+'">'+a[0]+'</button>').join('');
+  $('#cvActions').addEventListener('click',e=>{
+    const btn=e.target.closest('button');
+    if(!btn) return;
+    st.bits=actions[+btn.dataset.a][1](st.bits)&MASK();
+    renderConvert();
+  });
+  [['inBin',2,'errBin'],['inDec',10,'errDec'],['inHex',16,'errHex']].forEach(f=>{
+    const el=$('#'+f[0]),err=$('#'+f[2]);
+    el.addEventListener('input',()=>{
+      const p=parseNum(el.value,f[1]);
+      const r=p.err?p:toBits(p.v);
+      if(r.err){err.textContent=r.err;el.setAttribute('aria-invalid','true');return;}
+      err.textContent='';el.removeAttribute('aria-invalid');
+      st.bits=r.bits;
+      renderConvert(f[0]);
+    });
+    el.addEventListener('blur',()=>renderConvert());
+  });
+  $('#decSeg').addEventListener('click',e=>{
+    const btn=e.target.closest('button');
+    if(!btn) return;
+    st.decMode=btn.dataset.mode;
+    setupCards($('#cvCards'),true,st.decMode==='signed');
+    $$('#decSeg button').forEach(x=>x.setAttribute('aria-pressed',String(x===btn)));
+    renderConvert();
+  });
+}
+
+/* ---------- two's complement tab ---------- */
+function tcValue(){
+  const p=parseNum($('#inTc').value,10);
+  if(p.err) return {err:p.err};
+  if(p.v<lo()||p.v>hiS()) return {err:st.n+' 位元有號數的範圍是 '+lo()+' ~ '+hiS()+'。超出這個範圍就會溢位。'};
+  return {v:p.v};
+}
+function renderTwos(){
+  const out=$('#tcOut'),err=$('#tcErr');
+  const ex=[-1,-5,5,lo(),hiS()];
+  $('#tcEx').innerHTML='<span>試試</span>'+ex.map(v=>'<button type="button" class="btn" data-v="'+v+'">'+v+'</button>').join('');
+  const r=tcValue();
+  if(r.err){err.textContent=r.err;out.innerHTML='<p class="note">請輸入 '+lo()+' 至 '+hiS()+' 之間的整數。</p>';return;}
+  err.textContent='';
+  const v=r.v,abs=v<0n?-v:v;
+  let h;
+  if(v>=0n){
+    h=line('原碼',miniHTML(abs))+
+      '<p class="note" style="margin:.8rem 0 0">正數的補碼和原碼相同，符號位是 0。</p>'+
+      '<p class="expr">'+expr(abs,true)+'</p>';
+  }else{
+    const inv=~abs&MASK(),neg=wrap(inv+1n);
+    h=line('1. 寫出 '+abs+' 的二進制',miniHTML(abs))+
+      line('2. 每一位反轉',miniHTML(inv))+
+      line('3. 加 1，得到 '+v+' 的補碼',miniHTML(neg,{hl:inv^neg}))+
+      '<p class="note" style="margin:.8rem 0 0">藍框是加 1 時有變動的位元。</p>'+
+      '<p class="expr"><b>驗算</b>'+expr(neg,true)+'</p>';
+    if(v===lo()) h+='<p class="note">'+v+' 是這個位元寬度的最小值，沒有對應的正數 '+abs+'。</p>';
+  }
+  out.innerHTML=h;
+}
+function wireTwos(){
+  $('#inTc').addEventListener('input',renderTwos);
+  $('#tcEx').addEventListener('click',e=>{
+    const btn=e.target.closest('button');
+    if(!btn) return;
+    $('#inTc').value=btn.dataset.v;
+    renderTwos();
+  });
+  $('#tcLoad').addEventListener('click',()=>{
+    const r=tcValue();
+    if(r.err) return;
+    st.bits=wrap(r.v);
+    setTab('convert');
+  });
+}
+
+/* ---------- calculate tab ---------- */
+const opSym={'+':'+','-':'−','*':'×','&':'AND','|':'OR','^':'XOR'};
+function compute(){
+  const a=st.cs.a,b=st.cs.b,op=st.cs.op,m=MASK();
+  const r={op:op,a:a,b:b};
+  if(op==='+'||op==='-'){
+    const sub=op==='-',y=sub?(~b&m):b;
+    let c=sub?1:0,res=0n;
+    const cin=[];
+    for(let i=0;i<st.n;i++){
+      cin.push(c);
+      const s=B(bit(a,i)+bit(y,i)+c);
+      res|=(s&1n)<<B(i);
+      c=Number(s>>1n);
+    }
+    r.y=y;r.cin=cin;r.cout=c;r.res=res;
+    r.math=sub?sgn(a)-sgn(b):sgn(a)+sgn(b);
+    r.V=r.math<lo()||r.math>hiS();
+    r.C=c===1;
+  }else if(op==='*'){
+    const math=sgn(a)*sgn(b);
+    r.math=math;r.res=wrap(math);
+    r.V=math<lo()||math>hiS();
+    r.C=((a*b)>>W())!==0n;
+  }else{
+    r.res=op==='&'?(a&b):op==='|'?(a|b):(a^b);
+  }
+  r.Z=r.res===0n;
+  r.N=bit(r.res,st.n-1)===1;
+  return r;
+}
+function explain(r){
+  const s=opSym[r.op],sa=sgn(r.a),sb=sgn(r.b),sr=sgn(r.res);
+  const p=[];
+  if(r.op==='+'||r.op==='-'||r.op==='*'){
+    if(r.V) p.push('<strong>有號數</strong>　'+sa+' '+s+' '+sb+' 的數學結果是 '+r.math+'，超出 '+st.n+' 位元的範圍 '+lo()+' ~ '+hiS()+'，只能保留低 '+st.n+' 位，結果變成 '+sr+'。這就是溢位。');
+    else p.push('<strong>有號數</strong>　'+sa+' '+s+' '+sb+' = '+r.math+'，在 '+st.n+' 位元的範圍 '+lo()+' ~ '+hiS()+' 之內，結果正確。');
+    if(r.op==='+'||r.op==='-'){
+      const ci=r.cin[st.n-1];
+      p.push('判斷溢位：進入符號位的進位是 '+ci+'，從符號位送出的進位是 '+r.cout+'，兩者'+(ci!==r.cout?'不同，所以溢位':'相同，所以沒有溢位')+'。');
+    }
+    if(r.op==='-') p.push('減法的做法是把 B 每一位反轉，再加上進位輸入 1。這等於加上 -B 的補碼。');
+    const ua=r.a,ub=r.b;
+    if(r.op==='+') p.push('<strong>無號數</strong>　'+ua+' + '+ub+' = '+(ua+ub)+(r.C?'，超過 '+hiU()+'，進位 1 被丟棄，剩下 '+r.res+'。':'，沒有進位。'));
+    if(r.op==='-') p.push('<strong>無號數</strong>　'+ua+' - '+ub+(ua>=ub?' = '+(ua-ub)+'，沒有借位 (進位旗標 C = 1)。':' 是負數，無號數不能表示，產生借位 (C = 0)，結果是 '+r.res+'。'));
+    if(r.op==='*') p.push('<strong>無號數</strong>　'+ua+' × '+ub+' = '+(ua*ub)+(r.C?'，超過 '+hiU()+'，只保留低 '+st.n+' 位：'+r.res+'。':'。'));
+  }else{
+    const t=r.op==='&'?'AND：兩個位元都是 1 才得 1。':r.op==='|'?'OR：其中一個位元是 1 就得 1。':'XOR：兩個位元不同才得 1。';
+    p.push(t+' 逐位比較，不會產生進位或溢位。');
+  }
+  return p.map(x=>'<p>'+x+'</p>').join('');
+}
+function renderCalc(skip){
+  const cs=st.cs;
+  ['A','B'].forEach(k=>{
+    const val=cs[k.toLowerCase()],base=cs['base'+k];
+    if(skip!=='in'+k) $('#in'+k).value=fmt(val,base);
+    if(!skip){$('#err'+k).textContent='';$('#in'+k).removeAttribute('aria-invalid');}
+    $('#echo'+k).textContent=grp(bin(val))+'　0x'+hex(val)+'　有號 '+sgn(val)+'　無號 '+val;
+  });
+  $$('#opSeg button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.op===cs.op)));
+  const r=compute(),s=opSym[r.op];
+  const sa=sgn(r.a),sb=sgn(r.b),sr=sgn(r.res);
+  let work='';
+  if(r.op==='+'||r.op==='-'){
+    const sub=r.op==='-';
+    work+=line(sub?'進位 (輸入 1)':'進位',carryHTML(r.cin,r.cout,r.V));
+    work+=line('A',miniHTML(r.a,{lead:''}));
+    work+=line(sub?'B 反轉':'B',miniHTML(sub?r.y:r.b,{lead:''}));
+    work+=line('結果',miniHTML(r.res,{lead:''}));
+  }else{
+    work+=line('A',miniHTML(r.a));
+    work+=line('B',miniHTML(r.b));
+    work+=line('結果',miniHTML(r.res));
+  }
+  const cols=(r.op==='+'||r.op==='-')?st.n+1:st.n;
+  const arith=r.op==='+'||r.op==='-'||r.op==='*';
+  const flags=
+    (arith?'<span class="flag" data-on="'+(r.C?1:0)+'">進位 C = '+(r.C?1:0)+'</span><span class="flag" data-kind="warn" data-on="'+(r.V?1:0)+'">溢位 V = '+(r.V?1:0)+'</span>':'')+
+    '<span class="flag" data-on="'+(r.Z?1:0)+'">零 Z = '+(r.Z?1:0)+'</span><span class="flag" data-on="'+(r.N?1:0)+'">負 N = '+(r.N?1:0)+'</span>';
+  const eq=(arith?sa+' '+s+' '+sb:grp(bin(r.a))+' '+s+' '+grp(bin(r.b)))+' = '+(arith?sr:grp(bin(r.res)));
+  $('#calcOut').innerHTML=
+    '<div class="block"><h2 class="h">結果</h2><p class="eq">'+eq+'</p><div class="flags">'+flags+'</div></div>'+
+    '<div class="block"><h2 class="h">位元運算過程</h2><div class="box"><div class="work" style="--cols:'+cols+'">'+work+'</div></div></div>'+
+    '<div class="block explain box">'+explain(r)+'</div>'+
+    '<div class="block"><h2 class="h">結果的位元卡</h2><div class="cards" id="calcCards"></div></div>'+
+    '<div class="block box"><div class="stats">'+
+    '<div class="stat"><div class="k">二進制</div><div class="v mono">'+grp(bin(r.res))+'</div></div>'+
+    '<div class="stat"><div class="k">十六進制</div><div class="v mono">0x'+hex(r.res)+'</div></div>'+
+    '<div class="stat"><div class="k">有號十進制</div><div class="v">'+sr+'</div></div>'+
+    '<div class="stat"><div class="k">無號十進制</div><div class="v">'+r.res+'</div></div>'+
+    '</div></div>';
+  const cc=$('#calcCards');
+  setupCards(cc,false);
+  paintCards(cc,r.res);
+}
+function wireCalc(){
+  $('#opSeg').innerHTML=Object.keys(opSym).map(k=>'<button type="button" data-op="'+k+'" aria-pressed="false" aria-label="'+opSym[k]+'">'+opSym[k]+'</button>').join('');
+  $('#opSeg').addEventListener('click',e=>{
+    const btn=e.target.closest('button');
+    if(!btn) return;
+    st.cs.op=btn.dataset.op;
+    renderCalc();
+  });
+  ['A','B'].forEach(k=>{
+    const inp=$('#in'+k),sel=$('#base'+k),err=$('#err'+k);
+    inp.addEventListener('input',()=>{
+      const p=parseNum(inp.value,+sel.value);
+      const r=p.err?p:toBits(p.v);
+      if(r.err){err.textContent=r.err;inp.setAttribute('aria-invalid','true');return;}
+      err.textContent='';inp.removeAttribute('aria-invalid');
+      st.cs[k.toLowerCase()]=r.bits;
+      renderCalc('in'+k);
+    });
+    inp.addEventListener('blur',()=>renderCalc());
+    sel.addEventListener('change',()=>{st.cs['base'+k]=+sel.value;renderCalc();});
+  });
+}
+
+/* ---------- swap tab: 二⇄十, 二⇄十六, 十⇄補碼 ---------- */
+st.x={pair:'bd',rev:0,text:{},last:null};
+const XM={
+  bd:[{ib:2,il:'二進制',ol:'十進制 (無號)'},{ib:10,il:'十進制 (無號)',ol:'二進制'}],
+  bh:[{ib:2,il:'二進制',ol:'十六進制'},{ib:16,il:'十六進制',ol:'二進制'}],
+  dc:[{ib:10,il:'十進制 (有號)',ol:'二進制補碼'},{ib:2,il:'二進制補碼',ol:'十進制 (有號)'}]
+};
+function xDefault(pair,rev){
+  const s=st.bits&MASK();
+  if(pair==='bd') return rev?String(s):bin(s);
+  if(pair==='bh') return rev?hex(s):bin(s);
+  return rev?bin(s):String(sgn(s));
+}
+function xCompute(text){
+  const x=st.x,m=XM[x.pair][x.rev];
+  const p=parseNum(text,m.ib);
+  if(p.err) return {err:p.err};
+  const signedIn=x.pair==='dc'&&!x.rev;
+  if(p.v<0n&&!signedIn) return {err:(x.pair==='bd'&&x.rev)?'無號十進制不能是負數。負數請改用「十進制 ⇄ 二進制補碼」。':'這裡不需要負號。'};
+  if(signedIn){
+    if(p.v<lo()||p.v>hiS()) return {err:st.n+' 位元有號數的範圍是 '+lo()+' ~ '+hiS()+'。超出範圍會溢位。'};
+  }else if(p.v>hiU()){
+    return {err:'超出 '+st.n+' 位元的範圍 0 ~ '+hiU()+'。'};
+  }
+  const bits=wrap(p.v);
+  let out;
+  if(x.pair==='bd') out=x.rev?grp(bin(bits)):String(bits);
+  else if(x.pair==='bh') out=x.rev?grp(bin(bits)):hex(bits);
+  else out=x.rev?String(sgn(bits)):grp(bin(bits));
+  return {bits:bits,out:out};
+}
+function nibHTML(bits,rev){
+  let h='<div class="nibs">';
+  for(let g=st.n/4-1;g>=0;g--){
+    const v=Number((bits>>B(4*g))&15n);
+    const nb=v.toString(2).padStart(4,'0'),hx=v.toString(16).toUpperCase();
+    const parts=[8,4,2,1].filter((w,k)=>nb[k]==='1').join(' + ')||'0';
+    h+='<div class="nib"><div class="nb">'+nb+'</div><div class="nr">'+parts+' = '+v+'</div><div class="na">'+(rev?'↑':'↓')+'</div><div class="nh">'+hx+'</div></div>';
+  }
+  return h+'</div>';
+}
+function twosSteps(v){
+  const abs=v<0n?-v:v;
+  if(v>=0n){
+    return line('原碼',miniHTML(abs))+
+      '<p class="note" style="margin:.8rem 0 0">正數的補碼和原碼相同，符號位是 0。</p>'+
+      '<p class="expr"><b>驗算</b>'+expr(abs,true)+'</p>';
+  }
+  const inv=~abs&MASK(),neg=wrap(inv+1n);
+  return line('1. 寫出 '+abs+' 的二進制',miniHTML(abs,{unsigned:true}))+
+    line('2. 每一位反轉',miniHTML(inv,{unsigned:true}))+
+    line('3. 加 1，得到 '+v+' 的補碼',miniHTML(neg,{hl:inv^neg}))+
+    '<p class="note" style="margin:.8rem 0 0">藍框是加 1 時有變動的位元。</p>'+
+    '<p class="expr"><b>驗算</b>'+expr(neg,true)+'</p>';
+}
+function fromTwosSteps(bits){
+  let h=line('補碼',miniHTML(bits));
+  if(bit(bits,st.n-1)){
+    const inv=~bits&MASK(),mag=wrap(inv+1n);
+    h+='<p class="note" style="margin:.8rem 0">最高位是 1，所以是負數。方法一：每一位反轉，再加 1，得到絕對值。</p>'+
+      line('反轉',miniHTML(inv,{unsigned:true}))+
+      line('加 1',miniHTML(mag,{hl:inv^mag,unsigned:true}))+
+      '<p class="expr"><b>絕對值</b>'+mag+'，所以是 -'+mag+'</p>'+
+      '<p class="note" style="margin:.8rem 0 .2rem">方法二：符號位的權重是 '+wlabel(st.n-1)+'，把亮起的權重加起來。</p>';
+  }else{
+    h+='<p class="note" style="margin:.8rem 0 .2rem">最高位是 0，所以是正數。把亮起的權重加起來。</p>';
+  }
+  return h+'<p class="expr">'+expr(bits,true)+'</p>';
+}
+function xStepsHTML(bits){
+  const k=st.x.pair+st.x.rev;
+  const intro=t=>'<p class="note" style="margin:0 0 .8rem">'+t+'</p>';
+  if(k==='bd0'){
+    return intro('每個位元乘以它的權重，再全部加起來。')+
+      line('位元',miniHTML(bits,{unsigned:true}))+
+      '<p class="expr"><b>加總</b>'+expr(bits,false)+'</p>';
+  }
+  if(k==='bd1'){
+    let q=bits,rows='';
+    const rem=[];
+    if(q===0n){rows+='<tr><td>0 ÷ 2</td><td>0</td><td class="rem">0</td></tr>';rem.push(0n);}
+    while(q>0n){
+      const nq=q/2n,r=q%2n;
+      rows+='<tr><td>'+q+' ÷ 2</td><td>'+nq+'</td><td class="rem">'+r+'</td></tr>';
+      rem.push(r);q=nq;
+    }
+    const s=rem.reverse().join('');
+    return intro('不斷除以 2，記下餘數，直到商是 0。最後由下往上讀餘數。')+
+      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>算式</th><th>商</th><th>餘數</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      '<p class="expr"><b>餘數由下往上</b>'+s+'</p>'+
+      (s.length<st.n?'<p class="note" style="margin:.4rem 0 .8rem">前面補 0，湊成 '+st.n+' 位：</p>':'')+
+      line('位元',miniHTML(bits,{unsigned:true}));
+  }
+  if(k==='bh0'){
+    return intro('由右至左，每 4 個位元分成一組，每組換成一個十六進制數字。')+
+      line('位元',miniHTML(bits,{unsigned:true}))+
+      nibHTML(bits,false)+
+      '<p class="expr"><b>結果</b>0x'+hex(bits)+'</p>';
+  }
+  if(k==='bh1'){
+    return intro('每個十六進制數字換成 4 個位元。')+
+      nibHTML(bits,true)+
+      line('位元',miniHTML(bits,{unsigned:true}))+
+      '<p class="expr"><b>結果</b>'+grp(bin(bits))+'</p>';
+  }
+  if(k==='dc0') return twosSteps(sgn(bits));
+  return fromTwosSteps(bits);
+}
+function renderXfer(skip){
+  const x=st.x,m=XM[x.pair][x.rev],inp=$('#xIn'),key=x.pair+x.rev;
+  if(x.text[key]===undefined) x.text[key]=xDefault(x.pair,x.rev);
+  if(!skip) inp.value=x.text[key];
+  $('#xInLbl').textContent=m.il;
+  $('#xOutLbl').textContent=m.ol;
+  $$('#pairSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.pair===x.pair)));
+  $('#xHint').textContent=m.ib===2?'最多 '+st.n+' 位，位數不足時前面自動補 0。':
+    m.ib===16?'最多 '+(st.n/4)+' 位十六進制數字。':
+    (x.pair==='dc'?'有號範圍 '+lo()+' ~ '+hiS()+'。':'範圍 0 ~ '+hiU()+'。');
+  const r=xCompute(inp.value);
+  if(r.err){
+    $('#xErr').textContent=r.err;
+    inp.setAttribute('aria-invalid','true');
+    $('#xOut').textContent='—';
+    $('#xSteps').innerHTML='<p class="note">輸入正確的數值後，這裡會顯示每一步。</p>';
+    $('#xLoad').disabled=true;
+    x.last=null;
+    return;
+  }
+  $('#xErr').textContent='';
+  inp.removeAttribute('aria-invalid');
+  $('#xOut').textContent=r.out;
+  $('#xLoad').disabled=false;
+  x.last=r.bits;
+  $('#xSteps').setAttribute('style','--cols:'+st.n);
+  $('#xSteps').innerHTML=xStepsHTML(r.bits);
+}
+function wireXfer(){
+  $('#pairSeg').addEventListener('click',e=>{
+    const b=e.target.closest('button');
+    if(!b) return;
+    st.x.pair=b.dataset.pair;st.x.rev=0;
+    renderXfer();
+  });
+  $('#xIn').addEventListener('input',()=>{
+    st.x.text[st.x.pair+st.x.rev]=$('#xIn').value;
+    renderXfer(true);
+  });
+  $('#xSwap').addEventListener('click',()=>{
+    const r=xCompute($('#xIn').value);
+    const nr=st.x.rev?0:1;
+    if(!r.err) st.x.text[st.x.pair+nr]=r.out;
+    st.x.rev=nr;
+    renderXfer();
+  });
+  $('#xLoad').addEventListener('click',()=>{
+    if(st.x.last===null) return;
+    st.bits=st.x.last;
+    setTab('convert');
+  });
+}
+
+/* ---------- shell ---------- */
+function setTab(name){
+  st.tab=name;
+  $$('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===name)));
+  ['convert','xfer','twos','calc'].forEach(t=>{$('#p-'+t).hidden=t!==name;});
+  if(name==='convert') renderConvert();
+  if(name==='xfer') renderXfer();
+  if(name==='twos') renderTwos();
+  if(name==='calc') renderCalc();
+}
+function setWidth(k){
+  st.n=k;
+  st.bits&=MASK();st.cs.a&=MASK();st.cs.b&=MASK();
+  $$('#widthSeg button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.w===k)));
+  setupCards($('#cvCards'),true,st.decMode==='signed');
+  st.x.text={};
+  renderConvert();renderXfer();renderTwos();renderCalc();
+}
+$('#widthSeg').addEventListener('click',e=>{
+  const btn=e.target.closest('button');
+  if(btn) setWidth(+btn.dataset.w);
+});
+$$('.tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+
+wireConvert();wireXfer();wireTwos();wireCalc();
+setWidth(8);
+setTab('convert');
+})();
+</script>
+
+</body></html>
