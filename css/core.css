@@ -78,6 +78,12 @@
   transition: background 0.18s ease, transform 0.18s ease;
 }
 
+.unit-hero-link-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  filter: brightness(0) invert(1);
+}
+
 .unit-hero-link:hover {
   background: #137b7a;
   transform: translateY(-1px);
