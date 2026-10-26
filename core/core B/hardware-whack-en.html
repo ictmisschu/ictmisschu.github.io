@@ -1,0 +1,798 @@
+<title>hardware地鼠</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: one column. Slim header, then a start card, a play screen (HUD, question, PCB board with 9 sockets) or a results sheet. The board is a green circuit board; moles pop out of gold-rimmed sockets holding answer signs. */
+:root {
+  --bg: #eef3ef;
+  --fg: #10201a;
+  --muted: #51665b;
+  --line: #cdd9d1;
+  --card: #ffffff;
+  --soft: #e5ece7;
+  --gold: #d9a521;
+  --gold-ink: #1d1500;
+  --good: #158546;
+  --bad: #c4352b;
+  --warn: #a86a00;
+
+  /* scene colors stay the same in both themes */
+  --pcb: #0d5a47;
+  --pcb-dark: #073a2e;
+  --pcb-line: rgba(130, 230, 190, 0.13);
+  --hole: #03150f;
+  --pad: #d9a521;
+  --pad-dark: #7a5d12;
+  --mole: #7a6a5f;
+  --mole-dark: #5b4d44;
+  --mole-light: #cbb6a4;
+  --paper: #f8f1de;
+  --ink: #1c1a12;
+  --wood: #8a5f2b;
+
+  --font-ui: 'Chakra Petch', system-ui, sans-serif;
+  --font-tc: system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #07100c; --fg: #e4efe9; --muted: #8aa597; --line: #1b2b23; --card: #0e1914; --soft: #12201a;
+    --gold: #f2b929; --good: #4cd98a; --bad: #ff7066; --warn: #f0b429;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #07100c; --fg: #e4efe9; --muted: #8aa597; --line: #1b2b23; --card: #0e1914; --soft: #12201a;
+  --gold: #f2b929; --good: #4cd98a; --bad: #ff7066; --warn: #f0b429;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-tc);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 28px;
+}
+button { font: inherit; color: inherit; }
+button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.app { max-width: 620px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.logo { font-weight: 900; font-size: 1.125rem; letter-spacing: 0.04em; }
+.sub { font-family: var(--font-ui); font-size: 0.6875rem; letter-spacing: 0.18em; color: var(--muted); }
+.tools { display: flex; align-items: center; gap: 10px; font-size: 0.8125rem; color: var(--muted); }
+.tools b { font-family: var(--font-mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.tbtn { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; min-height: 36px; font-size: 0.8125rem; cursor: pointer; }
+.tbtn:hover { border-color: var(--gold); }
+
+.screen { display: flex; flex-direction: column; gap: 14px; }
+
+/* Buttons */
+.btn {
+  min-height: 52px; padding: 0 28px; border-radius: 8px; border: 1px solid var(--line); background: var(--card);
+  font-weight: 700; font-size: 1.0625rem; letter-spacing: 0.06em; cursor: pointer;
+}
+.btn.primary { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); }
+.btn.primary:hover { filter: brightness(1.07); }
+
+/* Start screen */
+.startcard { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+.hero { width: min(44vw, 170px); flex: none; margin-inline: auto; }
+.intro { flex: 1 1 240px; min-width: 0; }
+.eyebrow { margin: 0 0 4px; font-family: var(--font-ui); font-size: 0.75rem; letter-spacing: 0.2em; color: var(--muted); }
+h1 { margin: 0 0 8px; font-weight: 900; font-size: clamp(1.9rem, 8vw, 2.6rem); line-height: 1.15; letter-spacing: 0.02em; text-wrap: balance; }
+.lead { margin: 0; color: var(--muted); max-width: 34em; }
+.tablewrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+.spec { width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 440px; }
+.spec th, .spec td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.spec tr:last-child td { border-bottom: 0; }
+.spec th { font-size: 0.75rem; letter-spacing: 0.12em; color: var(--muted); font-weight: 500; background: var(--soft); }
+.spec td:first-child { font-weight: 700; white-space: nowrap; }
+.spec td:nth-child(2) { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.spec .plus { color: var(--good); }
+.spec .minus { color: var(--bad); }
+.startrow { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.bestline { color: var(--muted); font-size: 0.875rem; }
+.bestline b { font-family: var(--font-mono); color: var(--fg); font-size: 1.125rem; }
+
+/* HUD */
+.hud { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px 10px; min-width: 0; }
+.stat .k { font-size: 0.6875rem; letter-spacing: 0.16em; color: var(--muted); }
+.stat .v { font-family: var(--font-mono); font-weight: 700; font-size: clamp(1.5rem, 7vw, 2rem); line-height: 1.15; font-variant-numeric: tabular-nums; }
+.stat.low .v { color: var(--bad); }
+.bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+.bar i { display: block; height: 100%; width: 100%; background: var(--gold); transform-origin: left center; }
+.stat.low .bar i { background: var(--bad); }
+
+/* Question */
+.qcard { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+.qno { font-family: var(--font-mono); font-size: 0.75rem; color: var(--gold); font-weight: 700; letter-spacing: 0.08em; }
+.qtext { margin: 0; font-weight: 700; font-size: clamp(1.0625rem, 4.6vw, 1.3125rem); line-height: 1.4; min-height: 2.8em; text-wrap: balance; }
+.qbar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.qbar i { display: block; height: 100%; width: 100%; background: var(--fg); opacity: 0.55; transform-origin: left center; }
+
+/* Board */
+.board {
+  position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  padding: 10px 10px 20px; border: 4px solid var(--pcb-dark); border-radius: 14px; user-select: none; -webkit-user-select: none;
+  background-color: var(--pcb);
+  background-image:
+    radial-gradient(circle, rgba(217, 165, 33, 0.5) 1.4px, transparent 1.9px),
+    repeating-linear-gradient(90deg, var(--pcb-line) 0 2px, transparent 2px 26px),
+    repeating-linear-gradient(0deg, var(--pcb-line) 0 2px, transparent 2px 26px);
+  background-size: 26px 26px, auto, auto;
+}
+.board::after {
+  content: "HW-WHACK  REV 2.6  60S"; position: absolute; right: 12px; bottom: 5px;
+  font: 500 9px/1 var(--font-mono); letter-spacing: 0.14em; color: rgba(190, 255, 225, 0.4); pointer-events: none;
+}
+@media (min-width: 520px) { .board { gap: 12px; padding: 16px 16px 26px; border-width: 6px; } }
+.board.shake { animation: shake 0.22s linear; }
+@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.bmsg {
+  position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; pointer-events: none;
+  background: rgba(3, 20, 15, 0.6); color: #fff; font-weight: 900; font-size: clamp(2rem, 11vw, 3.6rem); letter-spacing: 0.1em; border-radius: 8px;
+}
+
+/* Hole: gold-rimmed socket with a clipped area above its center line */
+.hole {
+  position: relative; display: block; width: 100%; aspect-ratio: 1 / 1.2; container-type: inline-size;
+  background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.well {
+  position: absolute; left: 5%; right: 5%; bottom: 4%; height: 26%; display: block; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 35%, #0a2a20 0%, var(--hole) 70%);
+  box-shadow: 0 0 0 0.9cqw rgba(0, 0, 0, 0.35), 0 0 0 2.6cqw var(--pad), 0 1.6cqw 0 2.6cqw var(--pad-dark);
+}
+.clip { position: absolute; left: 0; right: 0; top: 0; bottom: 17%; overflow: hidden; display: block; }
+.mole {
+  position: absolute; left: 7%; right: 7%; bottom: 0; display: flex; flex-direction: column; align-items: center;
+  transform: translateY(106%); transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+.mole.up { transform: none; }
+.sign {
+  position: relative; z-index: 2; width: 92%; min-height: 24cqw; display: flex; align-items: center; justify-content: center;
+  padding: 2cqw 3cqw; background: var(--paper); color: var(--ink); border: 0.9cqw solid var(--wood); border-radius: 2cqw;
+  box-shadow: 0 1cqw 0 rgba(0, 0, 0, 0.25);
+}
+.sign::before, .sign::after {
+  content: ""; position: absolute; bottom: -5.5cqw; width: 11cqw; height: 9cqw; border-radius: 50%; background: var(--mole-dark);
+}
+.sign::before { left: -3cqw; }
+.sign::after { right: -3cqw; }
+.txt { font-weight: 900; font-size: clamp(11px, 13.5cqw, 26px); line-height: 1.15; text-align: center; text-wrap: balance; overflow-wrap: anywhere; }
+.txt.s { font-size: clamp(10px, 11.5cqw, 22px); }
+.sign.good { background: #c9f6c5; border-color: #1f9a52; }
+.sign.bad { background: #ffd0cb; border-color: #c4352b; }
+.sign.reveal { background: #fff0b0; border-color: var(--pad); animation: pulse 0.5s ease-in-out infinite alternate; }
+@keyframes pulse { to { box-shadow: 0 0 0 1.6cqw rgba(217, 165, 33, 0.6); } }
+.head { position: relative; z-index: 1; width: 62cqw; height: auto; margin-top: -5cqw; display: block; }
+.m-body { fill: var(--mole); }
+.m-ear { fill: var(--mole-dark); }
+.m-snout { fill: var(--mole-light); }
+.m-nose { fill: #e58aa0; }
+.m-gog { fill: rgba(255, 255, 255, 0.92); stroke: var(--pad); stroke-width: 3; }
+.m-bridge { stroke: var(--pad); stroke-width: 3; fill: none; }
+.m-pupil { fill: #1a1512; }
+.m-mouth { fill: none; stroke: #3a2a22; stroke-width: 2; stroke-linecap: round; }
+.xeyes { display: none; stroke: #1a1512; stroke-width: 2.6; stroke-linecap: round; fill: none; }
+.mole.stun .pupils { display: none; }
+.mole.stun .xeyes { display: block; }
+.mole.stun .head { animation: wob 0.35s linear; }
+.mole.cheer .head { animation: hop 0.35s ease-out; }
+@keyframes wob { 25% { transform: rotate(-7deg); } 75% { transform: rotate(7deg); } }
+@keyframes hop { 40% { transform: translateY(-6cqw) scale(1.06); } }
+.hero .mole.up .head { animation: bob 1.8s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-2cqw); } }
+
+.pop {
+  position: absolute; left: 50%; top: 18%; z-index: 4; transform: translateX(-50%); pointer-events: none;
+  font-family: var(--font-mono); font-weight: 700; font-size: clamp(15px, 17cqw, 30px); color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5); animation: rise 0.8s ease-out forwards; white-space: nowrap;
+}
+.pop.good { color: #86ffa6; }
+.pop.bad { color: #ff958b; }
+@keyframes rise { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -34px); } }
+
+/* Feedback line */
+.fb { display: flex; gap: 10px; align-items: flex-start; margin: 0; min-height: 3.7em; font-size: 0.9375rem; color: var(--fg); }
+.fb .tag { flex: none; font-family: var(--font-ui); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.1em; padding: 2px 8px; border-radius: 4px; background: var(--soft); color: var(--muted); margin-top: 2px; }
+.fb.good .tag { background: var(--good); color: #fff; }
+.fb.bad .tag { background: var(--bad); color: #fff; }
+.fb.miss .tag { background: var(--warn); color: #fff; }
+.fb .msg { min-width: 0; }
+
+/* Results */
+.result { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 22px 20px; display: flex; flex-direction: column; gap: 16px; }
+.result .label { font-family: var(--font-ui); font-size: 0.75rem; letter-spacing: 0.2em; color: var(--muted); }
+.bigscore { font-family: var(--font-mono); font-weight: 700; font-size: clamp(3.2rem, 18vw, 5.5rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.rankrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rank { font-weight: 900; font-size: 1.375rem; }
+.newbest { background: var(--gold); color: var(--gold-ink); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.1em; padding: 2px 10px; border-radius: 4px; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.stats div { background: var(--soft); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+.stats .k { font-size: 0.6875rem; letter-spacing: 0.1em; color: var(--muted); }
+.stats .v { font-family: var(--font-mono); font-weight: 700; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 440px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+.review h2 { margin: 0 0 8px; font-size: 1rem; }
+.review ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.review li { border-top: 1px dashed var(--line); padding-top: 10px; }
+.review .rq { color: var(--muted); font-size: 0.875rem; }
+.review .ra { font-weight: 700; margin: 2px 0; }
+.review .ra b { font-family: var(--font-mono); color: var(--good); }
+.review .rn { font-size: 0.875rem; color: var(--muted); }
+.clean { margin: 0; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mole { transition: none; }
+  .hero .mole.up .head, .mole.stun .head, .mole.cheer .head, .sign.reveal, .board.shake { animation: none; }
+  .pop { animation-duration: 0.01s; }
+}
+</style>
+
+<main class="app">
+  <header class="top">
+    <div class="brand"><span class="logo">Hardware Whack</span><span class="sub">HARDWARE WHACK</span></div>
+    <div class="tools">
+      <span>High Score <b id="bestTop">0</b></span>
+      <button type="button" class="tbtn" id="langBtn" aria-label="Switch language">中文</button>
+      <button type="button" class="tbtn" id="sndBtn" aria-pressed="true">Sound: On</button>
+    </div>
+  </header>
+
+  <section id="screenStart" class="screen">
+    <div class="startcard">
+      <div class="hero" id="hero"></div>
+      <div class="intro">
+        <p class="eyebrow">HARDWARE WHACK-A-MOLE</p>
+        <h1 id="gameTitle">Computer Hardware Whack-a-Mole</h1>
+        <p class="lead" id="gameLead">Hit only the mole holding the correct answer. You have 60 seconds to score as many points as possible.</p>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table class="spec">
+        <thead><tr><th>Action</th><th>Points</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr><td>Correct</td><td class="plus">100+</td><td>Answer faster to earn up to 50 bonus points. Each consecutive hit adds 10 combo points, up to 50.</td></tr>
+          <tr><td>Wrong</td><td class="minus">-50</td><td>Your combo resets, and your score cannot drop below 0.</td></tr>
+          <tr><td>Time Out</td><td>0</td><td>Each question has a 4–6 second time limit, which gets shorter as the game progresses. Your combo resets when time runs out.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="startrow">
+      <button type="button" class="btn primary" id="startBtn">Start Game</button>
+      <span class="bestline">Personal Best <b id="bestStart">0</b></span>
+    </div>
+  </section>
+
+  <section id="screenPlay" class="screen" hidden>
+    <div class="hud">
+      <div class="stat" id="timeStat"><div class="k">TIME</div><div class="v" id="time">60</div><div class="bar"><i id="tfill"></i></div></div>
+      <div class="stat"><div class="k">SCORE</div><div class="v" id="score">0</div></div>
+      <div class="stat"><div class="k">COMBO</div><div class="v" id="streak">0</div></div>
+    </div>
+    <div class="qcard">
+      <span class="qno" id="qNo">READY</span>
+      <p class="qtext" id="qText">Ready to play?</p>
+      <div class="qbar" aria-hidden="true"><i id="qfill"></i></div>
+    </div>
+    <div class="board" id="board">
+      <div class="bmsg" id="bmsg" hidden></div>
+    </div>
+    <p class="fb" id="fb" role="status" aria-live="polite"></p>
+  </section>
+
+  <section id="screenEnd" class="screen" hidden>
+    <div class="result">
+      <span class="label">FINAL SCORE</span>
+      <div class="bigscore" id="endScore">0</div>
+      <div class="rankrow"><span class="rank" id="endRank"></span><span class="newbest" id="endNew" hidden>NEW RECORD</span></div>
+      <div class="stats">
+        <div><div class="k">Correct</div><div class="v" id="stCorrect">0</div></div>
+        <div><div class="k">Wrong</div><div class="v" id="stWrong">0</div></div>
+        <div><div class="k">Accuracy</div><div class="v" id="stAcc">—</div></div>
+        <div><div class="k" >Best Combo</div><div class="v" id="stStreak">0</div></div>
+      </div>
+      <div class="review">
+        <h2>Questions to Review</h2>
+        <ul id="missList"></ul>
+        <p class="clean" id="cleanMsg" hidden>這一局沒有Wrong或Time Out的題目。</p>
+      </div>
+      <div class="startrow">
+        <button type="button" class="btn primary" id="againBtn">Play Again</button>
+        <span class="bestline">Personal Best <b id="bestEnd">0</b></span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var QS = [
+    { q: 'Which component is the computer’s “brain,” responsible for executing instructions and calculations?', a: 'CPU', w: ['Hard drive', 'Power supply', 'Case fan'], n: 'The CPU (Central Processing Unit) executes program instructions and performs calculations.' },
+    { q: 'Which component specializes in graphics and image processing?', a: 'GPU', w: ['Hard drive', 'Power supply', 'Network card'], n: 'The GPU (Graphics Processing Unit) excels at parallel processing and is often used for gaming and AI.' },
+    { q: 'Which storage device keeps its data when the computer is turned off?', a: 'SSD', w: ['RAM', 'CPU cache', 'Registers'], n: 'RAM, cache, and registers lose their contents when power is off. An SSD uses flash memory to retain data.' },
+    { q: 'What is the main purpose of RAM?', a: 'Temporarily stores active data', w: ['Stores files permanently', 'Supplies power', 'Dissipates heat'], n: 'RAM is fast and stores programs and data currently in use. Its contents are cleared when power is off.' },
+    { q: 'What is the main structural difference between an SSD and a traditional HDD?', a: 'No spinning disks', w: ['Uses magnetic platters', 'Uses laser reading', 'Requires a fan'], n: 'An SSD stores data on flash-memory chips and has no moving parts, making it faster and more resistant to shocks.' },
+    { q: 'What is the name of the motherboard slot used for RAM modules?', a: 'DIMM slot', w: ['SATA slot', 'USB port', 'M.2 slot'], n: 'Desktop computers use DIMM memory; laptops commonly use the shorter SO-DIMM.' },
+    { q: 'Which motherboard slot is typically used for a dedicated graphics card?', a: 'PCIe x16', w: ['DIMM', 'SATA', 'CMOS battery socket'], n: 'PCIe x16 provides the high bandwidth needed by graphics cards.' },
+    { q: 'What is the main job of a power supply unit (PSU)?', a: 'Converts AC to DC', w: ['Converts DC to AC', 'Increases network speed', 'Stores system settings'], n: 'Wall outlets supply AC, while computer components use DC at voltages such as 12 V, 5 V, and 3.3 V.' },
+    { q: 'What is usually applied between the CPU and its cooler?', a: 'Thermal paste', w: ['Lubricating oil', 'Super glue', 'Anti-rust paint'], n: 'Thermal paste fills tiny gaps between surfaces, helping transfer heat to the cooler.' },
+    { q: 'What is the main function of BIOS/UEFI firmware?', a: 'Initializes hardware during startup', w: ['Edits documents', 'Browses the web', 'Compresses files'], n: 'During startup, it checks and initializes hardware before handing control to the operating system.' },
+    { q: 'How many bits are in one byte?', a: '8', w: ['4', '16', '10'], n: '1 byte = 8 bits, a basic unit of data storage.' },
+    { q: 'Using binary units, how many MB are in 1 GB?', a: '1024 MB', w: ['100 MB', '512 MB', '1000 KB'], n: 'Computing often uses powers of 2, giving 1024 MB; storage manufacturers commonly use 1000-based units.' },
+    { q: 'What does DDR stand for in DDR memory?', a: 'Double Data Rate', w: ['Dual Disk Array', 'Dynamic Data Routing', 'Direct Digital Read'], n: 'Double Data Rate transfers data on both the rising and falling edges of the clock signal.' },
+    { q: 'Which form factor/interface is commonly used by NVMe SSDs?', a: 'M.2', w: ['VGA', 'PS/2', 'HDMI'], n: 'An M.2 slot can use PCIe lanes, enabling much higher speeds than SATA.' },
+    { q: 'Which interface can transmit both video and audio?', a: 'HDMI', w: ['VGA', 'PS/2', 'RJ-45'], n: 'HDMI carries digital video and audio over one cable, while VGA carries analog video only.' },
+    { q: 'What is an RJ-45 connector used to connect?', a: 'Ethernet cable', w: ['Headphones', 'Monitor cable', 'Power cable'], n: 'RJ-45 is a common connector for Ethernet cables.' },
+    { q: 'Which of the following storage levels is the fastest?', a: 'L1 cache', w: ['L3 cache', 'SSD', 'Hard drive'], n: 'Cache closer to the CPU core is faster but has a smaller capacity.' },
+    { q: 'Which unit is commonly used to measure CPU clock speed?', a: 'GHz', w: ['dB', 'mAh', 'dpi'], n: '1 GHz represents one billion clock cycles per second.' },
+    { q: 'What does “Hz” mean in a monitor specification?', a: 'Number of screen refreshes per second', w: ['Screen brightness', 'Number of colours', 'Bits transmitted per second'], n: '60 Hz means the display refreshes 60 times per second. Higher rates can make motion look smoother.' },
+    { q: 'What does a “quad-core” CPU have?', a: '4 processing cores', w: ['4 RAM modules', '4 cooling fans', 'A fixed 4 GHz clock speed'], n: 'Each core can process instructions independently. More cores can help with multitasking.' },
+    { q: 'What is a key feature of RAID 1?', a: 'Mirrored data', w: ['Speed only, no redundancy', 'Automatic overclocking', 'Increases the number of monitors'], n: 'RAID 1 mirrors the same data across two drives, so one drive can fail without losing the mirrored copy. RAID 0 focuses on performance.' },
+    { q: 'What does “overclocking” mean?', a: 'Raises component clock speed', w: ['Lowers screen brightness', 'Clears memory', 'Replaces the power cable'], n: 'Overclocking may improve performance, but it also increases heat and power consumption.' },
+    { q: 'In liquid cooling, which component releases heat into the air?', a: 'Radiator', w: ['Pump', 'Water block', 'CMOS battery'], n: 'The water block absorbs heat, the pump circulates coolant, and the radiator with fans releases heat.' },
+    { q: 'What is the main purpose of the CMOS battery on a motherboard?', a: 'Maintains the clock and settings', w: ['Powers the CPU', 'Powers cooling fans', 'Charges a phone'], n: 'It helps the motherboard retain the clock and BIOS settings when the computer is unplugged.' },
+    { q: 'Which unit measures a power supply’s output power?', a: 'Watts (W)', w: ['Hertz (Hz)', 'Bits', 'Pixels (px)'], n: 'Estimate the total system power draw and leave some headroom when choosing a PSU.' },
+    { q: 'Which of the following is volatile memory?', a: 'DRAM', w: ['NAND flash', 'HDD', 'ROM'], n: 'Volatile memory needs continuous power to retain data.' },
+    { q: 'What is the memory on a graphics card that stores textures and frame data called?', a: 'VRAM', w: ['ROM', 'CMOS', 'BIOS'], n: 'If VRAM is insufficient, games running at high settings may stutter.' },
+    { q: 'What component does NIC refer to?', a: 'Network Interface Card', w: ['Core integrated chip', 'Digital video card', 'New input circuit'], n: 'A NIC (Network Interface Card) connects a computer to a wired or wireless network.' },
+    { q: 'What does USB stand for?', a: 'Universal Serial Bus', w: ['Unified System Bus', 'Universal Software Base', 'Ultra-speed Transfer Bluetooth'], n: 'Universal Serial Bus, used to connect a wide range of peripheral devices.' },
+    { q: 'Which type of RAM module is commonly used in laptops?', a: 'SO-DIMM', w: ['ATX', 'VGA', 'SATA'], n: 'SO-DIMM modules are shorter than desktop DIMMs and suit laptops and compact computers.' },
+    { q: 'What do ATX, Micro-ATX, and Mini-ITX describe?', a: 'Motherboard size', w: ['Power cable length', 'Drive capacity', 'Screen aspect ratio'], n: 'Smaller boards usually have fewer expansion slots.' },
+    { q: 'What does RPM on a cooling fan mean?', a: 'Revolutions per minute', w: ['Transfer rate per second', 'Power output', 'Noise level in decibels'], n: 'RPM means revolutions per minute. Higher fan speeds usually move more air but create more noise.' },
+    { q: 'What does TDP typically indicate for a CPU?', a: 'Thermal Design Power', w: ['Data transfer rate', 'Total drive capacity', 'Number of motherboard layers'], n: 'TDP (Thermal Design Power) is one reference when selecting a cooler.' },
+    { q: 'What is a common rotational speed for a 3.5-inch desktop HDD?', a: '7200 RPM', w: ['720 GHz', '7200 W', '72 dB'], n: 'Desktop HDDs commonly run at 5400 or 7200 RPM. Higher rotational speeds generally offer better performance.' },
+    { q: 'What type of component is the RTX 4090?', a: 'Graphics card', w: ['Processor', 'Memory', 'Power supply'], n: 'RTX is a graphics card series from NVIDIA.' },
+    { q: 'What type of product are Ryzen and Core i7?', a: 'Processor series', w: ['Graphics card series', 'Hard drive brand', 'Monitor panel'], n: 'Ryzen is AMD’s CPU family, while Core is Intel’s CPU family.' },
+    { q: 'Before building a PC, what should you do to prevent static electricity from damaging components?', a: 'Discharge static electricity from your body', w: ['Wear a thick sweater', 'Power it on first', 'Wipe the motherboard with a wet cloth'], n: 'Touch a grounded metal surface or wear an anti-static wrist strap.' },
+    { q: 'How should you align a CPU when installing it?', a: 'Align the corner markers', w: ['Force it down', 'Apply a thick layer of glue', 'Power on before installing'], n: 'The CPU and socket have alignment markers. Incorrect orientation can damage the pins.' },
+    { q: 'What is the resolution of 1080p?', a: '1920×1080', w: ['1280×720', '3840×2160', '800×600'], n: '1920 × 1080 is also called Full HD; 3840 × 2160 is 4K.' },
+    { q: 'What does DPI mean in mouse specifications?', a: 'Dots per inch', w: ['Frames per second', 'Clicks per minute', 'Screen size'], n: 'A higher DPI makes the pointer move farther for the same physical mouse movement.' },
+    { q: 'Which connector is common on older monitors and transmits analog video only?', a: 'VGA', w: ['HDMI', 'USB-C', 'DP'], n: 'VGA uses an analog signal and generally offers lower image quality and shorter transmission distance than digital interfaces.' },
+    { q: 'Which of the following is a computer input device?', a: 'Keyboard', w: ['Speakers', 'Monitor', 'Printer'], n: 'Input devices send user actions to the computer. Speakers, monitors, and printers are output devices.' },
+    { q: 'Which type of memory is faster than DRAM and commonly used for CPU cache?', a: 'SRAM', w: ['NAND', 'Hard drive', 'Optical disc'], n: 'SRAM is fast but expensive and has low capacity, so it is mainly used for cache.' },
+    { q: 'What is a key feature of ECC memory?', a: 'Can detect and correct errors', w: ['Especially small', 'Only used in phones', 'Has built-in liquid cooling'], n: 'ECC memory is often used in servers and can correct single-bit errors.' }
+  ];
+
+  var QS_EN = QS;
+  var QS_ZH = [
+    { q: '電腦裡負責執行指令與運算的「大腦」是哪個元件？', a: 'CPU', w: ['硬碟', '電源供應器', '機殼風扇'], n: 'CPU（中央處理器）負責執行程式指令與運算。' },
+    { q: '哪個元件專門處理圖形與影像運算？', a: 'GPU', w: ['硬碟', '電源供應器', '網路卡'], n: 'GPU（圖形處理器）擅長大量平行運算，也常用於遊戲與 AI。' },
+    { q: '電腦關機後，哪一種儲存裝置裡的資料不會消失？', a: 'SSD', w: ['RAM', 'CPU 快取', '暫存器'], n: 'RAM、快取和暫存器斷電就清空；SSD 使用快閃記憶體，可長期保存資料。' },
+    { q: 'RAM（記憶體）的主要用途是什麼？', a: '暫存運行中資料', w: ['永久保存檔案', '提供電力', '散發熱量'], n: 'RAM 速度快，用來存放正在執行的程式與資料，關機即清空。' },
+    { q: 'SSD 與傳統 HDD 最大的結構差異是什麼？', a: '沒有轉動碟片', w: ['使用磁性碟片', '靠雷射讀取', '必須搭配風扇'], n: 'SSD 用快閃記憶體晶片儲存，沒有機械零件，速度更快、更耐震。' },
+    { q: '主機板上用來安裝記憶體條的插槽叫什麼？', a: 'DIMM 插槽', w: ['SATA 插槽', 'USB 插槽', 'M.2 插槽'], n: '桌機記憶體使用 DIMM 規格，筆電常用較短的 SO-DIMM。' },
+    { q: '獨立顯示卡通常插在主機板的哪種插槽？', a: 'PCIe x16', w: ['DIMM', 'SATA', 'CMOS 電池座'], n: 'PCIe x16 提供顯示卡所需的高頻寬。' },
+    { q: '電源供應器（PSU）的主要工作是什麼？', a: '交流電轉直流電', w: ['直流電轉交流電', '提升網路速度', '儲存系統設定'], n: '插座是交流電，電腦零件使用的是 12V、5V、3.3V 等直流電。' },
+    { q: 'CPU 與散熱器之間通常會塗上什麼？', a: '散熱膏', w: ['潤滑油', '強力膠', '防鏽漆'], n: '散熱膏填補金屬表面的微小縫隙，幫助熱量傳到散熱器。' },
+    { q: 'BIOS／UEFI 韌體最主要的功能是什麼？', a: '開機時初始化硬體', w: ['編輯文件', '瀏覽網頁', '壓縮檔案'], n: '開機時先檢查並初始化硬體，再把控制權交給作業系統。' },
+    { q: '1 個位元組（Byte）等於幾個位元（bit）？', a: '8 個', w: ['4 個', '16 個', '10 個'], n: '1 Byte = 8 bit，是儲存容量的基本單位。' },
+    { q: '以二進位換算，1 GB 等於多少 MB？', a: '1024 MB', w: ['100 MB', '512 MB', '1000 KB'], n: '電腦內部以 2 的次方計算，所以是 1024；硬碟廠商則常用 1000。' },
+    { q: 'DDR 記憶體的 DDR 是什麼意思？', a: '雙倍資料傳輸率', w: ['雙重磁碟陣列', '動態資料路由', '直接數位讀取'], n: 'Double Data Rate：在時脈的上升與下降緣各傳輸一次資料。' },
+    { q: 'NVMe SSD 最常使用哪種介面？', a: 'M.2', w: ['VGA', 'PS/2', 'HDMI'], n: 'M.2 插槽直接走 PCIe 通道，速度遠高於 SATA。' },
+    { q: '下列哪種介面能同時傳輸影像與聲音？', a: 'HDMI', w: ['VGA', 'PS/2', 'RJ-45'], n: 'HDMI 可在同一條線傳送數位影像與音訊；VGA 只傳類比影像。' },
+    { q: 'RJ-45 接頭是用來連接什麼的？', a: '網路線', w: ['耳機', '螢幕線', '電源線'], n: 'RJ-45 是乙太網路線常見的接頭。' },
+    { q: '下列哪一種儲存層級速度最快？', a: 'L1 快取', w: ['L3 快取', 'SSD', '硬碟'], n: '越靠近 CPU 核心的快取越快，容量也越小。' },
+    { q: 'CPU 時脈速度常用哪個單位表示？', a: 'GHz', w: ['dB', 'mAh', 'dpi'], n: '1 GHz 表示每秒十億個時脈週期。' },
+    { q: '顯示器規格中的「Hz」代表什麼？', a: '畫面每秒更新次數', w: ['螢幕亮度', '色彩數量', '每秒傳輸位元'], n: '60Hz 代表每秒更新 60 次，數值越高畫面越流暢。' },
+    { q: '「4 核心」CPU 指的是什麼？', a: '4 個處理核心', w: ['4 條記憶體', '4 顆散熱風扇', '時脈固定 4GHz'], n: '每個核心都能獨立執行運算，核心越多越適合同時處理多工。' },
+    { q: 'RAID 1 的特色是什麼？', a: '資料鏡像備份', w: ['只加速不備援', '自動超頻', '增加螢幕數量'], n: 'RAID 1 把同一份資料寫入兩顆硬碟，壞一顆也不會遺失；RAID 0 才是只加速。' },
+    { q: '「超頻」是指什麼？', a: '提高元件時脈', w: ['降低螢幕亮度', '清除記憶體', '更換電源線'], n: '超頻能換取更高效能，但發熱與耗電也會增加。' },
+    { q: '水冷散熱中，哪個零件負責把熱量散到空氣中？', a: '冷排', w: ['水泵', '水冷頭', 'CMOS 電池'], n: '水冷頭吸熱、水泵推動冷卻液，冷排搭配風扇把熱量排出。' },
+    { q: '主機板上的 CMOS 電池主要用來做什麼？', a: '維持時鐘與設定', w: ['替 CPU 供電', '驅動散熱風扇', '幫手機充電'], n: '斷電後仍讓主機板記得時間與 BIOS 設定。' },
+    { q: '電源供應器的輸出功率用哪個單位衡量？', a: '瓦特 (W)', w: ['赫茲 (Hz)', '位元 (bit)', '像素 (px)'], n: '選購時要估算整機耗電量，並預留一些餘裕。' },
+    { q: '下列哪一種屬於「揮發性」記憶體？', a: 'DRAM', w: ['NAND 快閃', 'HDD', 'ROM'], n: '揮發性記憶體需要持續供電才能保存資料。' },
+    { q: '顯示卡上存放貼圖與畫面資料的記憶體叫什麼？', a: 'VRAM', w: ['ROM', 'CMOS', 'BIOS'], n: 'VRAM（顯示記憶體）容量不足時，高畫質遊戲容易卡頓。' },
+    { q: 'NIC 指的是哪一種元件？', a: '網路介面卡', w: ['核心整合晶片', '數位影像卡', '新型輸入電路'], n: 'NIC（Network Interface Card）讓電腦連上有線或無線網路。' },
+    { q: 'USB 是哪三個字的縮寫？', a: '通用序列匯流排', w: ['統一系統匯流排', '通用軟體基礎', '超速傳輸藍牙'], n: 'Universal Serial Bus，用來連接各種週邊裝置。' },
+    { q: '筆記型電腦常用哪種規格的記憶體條？', a: 'SO-DIMM', w: ['ATX', 'VGA', 'SATA'], n: 'SO-DIMM 比桌機的 DIMM 更短，適合筆電與小型主機。' },
+    { q: 'ATX、Micro-ATX、Mini-ITX 描述的是什麼規格？', a: '主機板尺寸', w: ['電源線長度', '硬碟容量', '螢幕比例'], n: '尺寸越小，擴充插槽通常越少。' },
+    { q: '散熱風扇上標示的 RPM 是什麼意思？', a: '每分鐘轉速', w: ['每秒傳輸量', '電源功率', '噪音分貝'], n: 'RPM 是每分鐘轉數，轉速越高風量通常越大，噪音也越大。' },
+    { q: 'TDP 通常用來表示 CPU 的什麼？', a: '散熱設計功耗', w: ['資料傳輸量', '硬碟總容量', '主機板層數'], n: 'TDP（Thermal Design Power）是挑選散熱器時的參考值。' },
+    { q: '常見 3.5 吋機械硬碟的轉速是多少？', a: '7200 RPM', w: ['720 GHz', '7200 W', '72 dB'], n: '桌機 HDD 常見 5400 或 7200 RPM，轉速越高通常越快。' },
+    { q: 'RTX 4090 屬於哪一類元件？', a: '顯示卡', w: ['處理器', '記憶體', '電源供應器'], n: 'RTX 是 NVIDIA 的顯示卡系列。' },
+    { q: 'Ryzen 與 Core i7 同屬哪一類產品？', a: '處理器系列', w: ['顯示卡系列', '硬碟品牌', '螢幕面板'], n: 'Ryzen 是 AMD 的 CPU，Core 是 Intel 的 CPU。' },
+    { q: '組裝電腦前，為了避免靜電損壞零件，應該先做什麼？', a: '釋放身上靜電', w: ['穿厚毛衣', '先通電測試', '用濕布擦主機板'], n: '可先摸一下接地的金屬，或戴防靜電手環。' },
+    { q: '安裝 CPU 時，應該怎麼對位？', a: '對準缺角標記', w: ['用力壓到底', '塗厚厚一層膠', '先通電再安裝'], n: 'CPU 與插座都有方向標記，方向錯了很容易壓壞針腳。' },
+    { q: '1080p 的解析度是多少？', a: '1920×1080', w: ['1280×720', '3840×2160', '800×600'], n: '1920×1080 也稱 Full HD；3840×2160 則是 4K。' },
+    { q: '滑鼠規格中的 DPI 代表什麼？', a: '每英吋點數', w: ['每秒畫面數', '每分鐘點擊數', '螢幕尺寸'], n: 'DPI 越高，滑鼠游標移動同樣距離時就越快。' },
+    { q: '哪一種接頭常見於舊式螢幕，只傳輸類比影像？', a: 'VGA', w: ['HDMI', 'USB-C', 'DP'], n: 'VGA 是類比訊號，畫質與傳輸距離都不如數位介面。' },
+    { q: '下列哪一個是電腦的「輸入裝置」？', a: '鍵盤', w: ['喇叭', '螢幕', '印表機'], n: '輸入裝置把使用者的操作傳給電腦；喇叭、螢幕、印表機屬於輸出裝置。' },
+    { q: '哪種記憶體速度比 DRAM 更快，常用來做 CPU 快取？', a: 'SRAM', w: ['NAND', '硬碟', '光碟'], n: 'SRAM 速度快但成本高、容量小，所以只用在快取。' },
+    { q: 'ECC 記憶體的特色是什麼？', a: '能偵測並修正錯誤', w: ['體積特別小', '只能用在手機', '內建水冷散熱'], n: 'ECC 常用於伺服器，可修正單一位元的錯誤。' }
+  ];
+  var lang = 'en';
+
+  var GAME_MS = 60000;
+  var $ = function (id) { return document.getElementById(id); };
+  var el = {
+    start: $('screenStart'), play: $('screenPlay'), end: $('screenEnd'),
+    time: $('time'), timeStat: $('timeStat'), tfill: $('tfill'), score: $('score'), streak: $('streak'),
+    qNo: $('qNo'), qText: $('qText'), qfill: $('qfill'), board: $('board'), bmsg: $('bmsg'), fb: $('fb'),
+    bestTop: $('bestTop'), bestStart: $('bestStart'), bestEnd: $('bestEnd'), snd: $('sndBtn')
+  };
+
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function range(n) { var r = []; for (var i = 0; i < n; i++) r.push(i); return r; }
+
+  /* ---------- sound ---------- */
+  var audio = null;
+  var sndOn = load('hw-snd') !== '0';
+  function renderSnd() { el.snd.textContent = (typeof uiText !== 'undefined' && uiText) ? (sndOn ? uiText[lang].soundOn : uiText[lang].soundOff) : (sndOn ? 'Sound: On' : 'Sound: Off'); el.snd.setAttribute('aria-pressed', String(sndOn)); }
+  function unlock() {
+    try {
+      if (!audio) { var AC = window.AudioContext || window.webkitAudioContext; if (AC) audio = new AC(); }
+      if (audio && audio.state === 'suspended') audio.resume();
+    } catch (e) {}
+  }
+  function tone(freq, dur, type, vol, delay) {
+    if (!sndOn || !audio) return;
+    try {
+      var t0 = audio.currentTime + (delay || 0);
+      var o = audio.createOscillator(), g = audio.createGain();
+      o.type = type || 'square'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol || 0.1, t0 + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g); g.connect(audio.destination);
+      o.start(t0); o.stop(t0 + dur + 0.02);
+    } catch (e) {}
+  }
+  function sfx(kind) {
+    if (kind === 'good') { tone(660, 0.09, 'square', 0.09, 0); tone(990, 0.14, 'square', 0.09, 0.08); }
+    else if (kind === 'bad') { tone(160, 0.22, 'sawtooth', 0.1, 0); }
+    else if (kind === 'miss') { tone(320, 0.2, 'triangle', 0.12, 0); }
+    else if (kind === 'end') { tone(523, 0.14, 'square', 0.08, 0); tone(659, 0.14, 'square', 0.08, 0.16); tone(784, 0.26, 'square', 0.08, 0.32); }
+  }
+  el.snd.addEventListener('click', function () { sndOn = !sndOn; save('hw-snd', sndOn ? '1' : '0'); renderSnd(); unlock(); if (sndOn) sfx('good'); });
+  renderSnd();
+
+  /* ---------- holes ---------- */
+  var SIGN = '<span class="sign"><span class="txt"></span></span>';
+  var HEAD =
+    '<svg class="head" viewBox="0 0 100 80" aria-hidden="true">' +
+    '<path class="m-body" d="M8 80 C8 40 26 16 50 16 C74 16 92 40 92 80 Z"/>' +
+    '<circle class="m-ear" cx="25" cy="27" r="8"/><circle class="m-ear" cx="75" cy="27" r="8"/>' +
+    '<ellipse class="m-snout" cx="50" cy="66" rx="19" ry="13"/>' +
+    '<circle class="m-gog" cx="36" cy="44" r="9"/><circle class="m-gog" cx="64" cy="44" r="9"/><path class="m-bridge" d="M45 44 H55"/>' +
+    '<g class="pupils"><circle class="m-pupil" cx="36" cy="45" r="3.4"/><circle class="m-pupil" cx="64" cy="45" r="3.4"/></g>' +
+    '<g class="xeyes"><path d="M31 40 L41 50 M41 40 L31 50 M59 40 L69 50 M69 40 L59 50"/></g>' +
+    '<ellipse class="m-nose" cx="50" cy="58" rx="7" ry="4.8"/>' +
+    '<path class="m-mouth" d="M44 70 Q50 75 56 70"/>' +
+    '</svg>';
+
+  function buildHole(tag) {
+    var h = document.createElement(tag);
+    h.className = 'hole';
+    if (tag === 'button') h.type = 'button';
+    h.innerHTML = '<span class="well"></span><span class="clip"><span class="mole">' + SIGN + HEAD + '</span></span>';
+    return {
+      el: h, mole: h.querySelector('.mole'), sign: h.querySelector('.sign'), txt: h.querySelector('.txt'),
+      answer: '', correct: false, active: false
+    };
+  }
+  function showMole(h, text, correct) {
+    h.answer = text; h.correct = correct; h.active = true;
+    h.txt.textContent = text;
+    h.txt.className = 'txt' + (Array.from(text).length >= 8 ? ' s' : '');
+    h.sign.className = 'sign';
+    h.mole.classList.remove('stun', 'cheer');
+    h.mole.classList.add('up');
+    h.el.setAttribute('aria-label', 'Mole holding answer: ' + text);
+  }
+  function hideMole(h) {
+    h.active = false;
+    h.mole.classList.remove('up');
+    h.el.setAttribute('aria-label', 'Empty hole');
+  }
+
+  var holes = [];
+  for (var i = 0; i < 9; i++) {
+    var h = buildHole('button');
+    h.el.setAttribute('data-i', String(i));
+    h.el.setAttribute('aria-label', 'Empty hole');
+    el.board.appendChild(h.el);
+    holes.push(h);
+  }
+  var hero = buildHole('div');
+  $('hero').classList.add('hero');
+  $('hero').appendChild(hero.el);
+  showMole(hero, 'CPU', true);
+
+  /* ---------- game state ---------- */
+  var G, raf = 0, lastSecs = -1;
+  function fresh(deck) {
+    return {
+      phase: 'start', timers: new Set(), score: 0, correct: 0, wrong: 0, streak: 0, bestStreak: 0, qNum: 0,
+      missed: [], q: null, qStart: 0, qLimit: 6000, locked: true, logged: false, inputOpenAt: 0, start: 0, end: 0, deck: deck || []
+    };
+  }
+  G = fresh();
+
+  function later(fn, ms) {
+    var id = setTimeout(function () { G.timers.delete(id); fn(); }, ms);
+    G.timers.add(id);
+    return id;
+  }
+  function clearTimers() { G.timers.forEach(function (id) { clearTimeout(id); }); G.timers.clear(); }
+
+  function getBest() { return Number(load('hw-best') || 0) || 0; }
+  function renderBest() {
+    var b = String(getBest());
+    el.bestTop.textContent = b; el.bestStart.textContent = b; el.bestEnd.textContent = b;
+  }
+  renderBest();
+
+  function showScreen(name) {
+    el.start.hidden = name !== 'start';
+    el.play.hidden = name !== 'play';
+    el.end.hidden = name !== 'end';
+    window.scrollTo(0, 0);
+  }
+
+  function setHud() {
+    el.score.textContent = String(G.score);
+    el.streak.textContent = G.streak > 0 ? '×' + G.streak : '0';
+  }
+  function setFb(kind, text) {
+    el.fb.className = 'fb ' + kind;
+    el.fb.textContent = '';
+    if (!text) return;
+    var tag = document.createElement('span'); tag.className = 'tag';
+    tag.textContent = kind === 'good' ? uiText[lang].correctTag : kind === 'bad' ? uiText[lang].wrongTag : kind === 'miss' ? uiText[lang].timeTag : uiText[lang].hintTag;
+    var msg = document.createElement('span'); msg.className = 'msg'; msg.textContent = text;
+    el.fb.appendChild(tag); el.fb.appendChild(msg);
+  }
+  function pop(h, text, kind) {
+    var s = document.createElement('span');
+    s.className = 'pop ' + kind; s.textContent = text;
+    h.el.appendChild(s);
+    setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 850);
+  }
+  function shake() {
+    el.board.classList.remove('shake');
+    void el.board.offsetWidth;
+    el.board.classList.add('shake');
+  }
+
+  /* ---------- flow ---------- */
+  function startGame() {
+    clearTimers();
+    cancelAnimationFrame(raf);
+    G = fresh(G.deck);
+    G.phase = 'ready';
+    holes.forEach(function (h) { hideMole(h); h.sign.className = 'sign'; });
+    lastSecs = -1;
+    el.time.textContent = '60';
+    el.timeStat.classList.remove('low');
+    el.tfill.style.transform = 'scaleX(1)';
+    el.qfill.style.transform = 'scaleX(1)';
+    setHud();
+    setFb('info', 'Hit the mole holding the correct answer. Wrong hits cost 50 points.');
+    el.qNo.textContent = 'READY';
+    el.qText.textContent = uiText[lang].ready;
+    el.bmsg.textContent = uiText[lang].readyTag;
+    el.bmsg.hidden = false;
+    showScreen('play');
+    later(function () {
+      el.bmsg.hidden = true;
+      G.phase = 'play';
+      var now = performance.now();
+      G.start = now; G.end = now + GAME_MS;
+      nextQuestion();
+      raf = requestAnimationFrame(loop);
+    }, 900);
+  }
+
+  function nextQuestion() {
+    if (G.phase !== 'play') return;
+    if (!G.deck.length) G.deck = shuffle(range(QS.length));
+    var q = QS[G.deck.pop()];
+    var now = performance.now();
+    var progress = Math.max(0, Math.min(1, (now - G.start) / GAME_MS));
+    G.q = q; G.qNum++; G.logged = false; G.locked = false;
+    G.qLimit = Math.round(6500 - 2200 * progress);
+    G.qStart = now + 320;
+    G.inputOpenAt = now + 260;
+    el.qNo.textContent = 'Q' + (G.qNum < 10 ? '0' : '') + G.qNum + ' >';
+    el.qText.textContent = q.q;
+    el.qfill.style.transform = 'scaleX(1)';
+    setFb('info', uiText[lang].hint);
+    var opts = shuffle([{ t: q.a, c: true }].concat(q.w.slice(0, 3).map(function (t) { return { t: t, c: false }; })));
+    var spots = shuffle(range(9)).slice(0, opts.length);
+    opts.forEach(function (o, k) {
+      later(function () { showMole(holes[spots[k]], o.t, o.c); }, 40 + k * 70);
+    });
+  }
+
+  function loop() {
+    if (G.phase !== 'play') return;
+    var now = performance.now();
+    var remain = Math.max(0, G.end - now);
+    var secs = Math.ceil(remain / 1000);
+    if (secs !== lastSecs) {
+      lastSecs = secs;
+      el.time.textContent = String(secs);
+      el.timeStat.classList.toggle('low', secs <= 10);
+    }
+    el.tfill.style.transform = 'scaleX(' + (remain / GAME_MS) + ')';
+    if (G.q && !G.locked) {
+      var f = 1 - (now - G.qStart) / G.qLimit;
+      el.qfill.style.transform = 'scaleX(' + Math.max(0, Math.min(1, f)) + ')';
+      if (f <= 0) onTimeout();
+    }
+    if (remain <= 0) { endGame(); return; }
+    raf = requestAnimationFrame(loop);
+  }
+
+  function logMiss() {
+    if (!G.logged && G.q) { G.logged = true; G.missed.push(G.q); }
+  }
+
+  function whack(i) {
+    if (G.phase !== 'play' || G.locked) return;
+    var now = performance.now();
+    if (now < G.inputOpenAt) return;
+    var h = holes[i];
+    if (!h.active) return;
+    if (h.correct) {
+      var frac = Math.max(0, Math.min(1, 1 - (now - G.qStart) / G.qLimit));
+      G.streak++;
+      if (G.streak > G.bestStreak) G.bestStreak = G.streak;
+      var speed = Math.round(50 * frac);
+      var combo = Math.min(G.streak - 1, 5) * 10;
+      var pts = 100 + speed + combo;
+      G.score += pts; G.correct++;
+      G.locked = true;
+      h.sign.classList.add('good');
+      h.mole.classList.add('cheer');
+      pop(h, '+' + pts, 'good');
+      sfx('good');
+      setFb('good', G.q.n);
+      setHud();
+      holes.forEach(function (o) { if (o !== h && o.active) later(function () { hideMole(o); }, 90); });
+      later(function () { hideMole(h); }, 520);
+      later(nextQuestion, 720);
+    } else {
+      G.score = Math.max(0, G.score - 50);
+      G.streak = 0; G.wrong++;
+      logMiss();
+      h.active = false;
+      h.sign.classList.add('bad');
+      h.mole.classList.add('stun');
+      pop(h, '-50', 'bad');
+      sfx('bad');
+      shake();
+      setFb('bad', 'That is not the correct answer. Keep looking!');
+      setHud();
+      later(function () { hideMole(h); }, 420);
+    }
+  }
+
+  function onTimeout() {
+    if (G.locked) return;
+    G.locked = true;
+    G.streak = 0;
+    logMiss();
+    var q = G.q;
+    sfx('miss');
+    setFb('miss', 'The answer is “' + q.a + '”.' + q.n);
+    setHud();
+    holes.forEach(function (o) {
+      if (!o.active) return;
+      if (o.correct) { o.sign.classList.add('reveal'); later(function () { hideMole(o); }, 1300); }
+      else later(function () { hideMole(o); }, 80);
+    });
+    later(nextQuestion, 1500);
+  }
+
+  function endGame() {
+    if (G.phase === 'end') return;
+    G.phase = 'end';
+    cancelAnimationFrame(raf);
+    clearTimers();
+    holes.forEach(hideMole);
+    el.time.textContent = '0';
+    el.tfill.style.transform = 'scaleX(0)';
+    el.bmsg.textContent = uiText[lang].timeUp;
+    el.bmsg.hidden = false;
+    sfx('end');
+    later(showEnd, 1100);
+  }
+
+  function rankOf(s) {
+    if (s < 400) return 'Hardware Rookie';
+    if (s < 800) return 'Repair Apprentice';
+    if (s < 1200) return 'Hardware Engineer';
+    if (s < 1600) return 'Hardware Expert';
+    return 'Hardware Master';
+  }
+
+  function showEnd() {
+    var prev = getBest();
+    var isNew = G.score > prev && G.score > 0;
+    if (isNew) save('hw-best', String(G.score));
+    renderBest();
+    $('endScore').textContent = String(G.score);
+    $('endRank').textContent = rankOf(G.score);
+    $('endNew').hidden = !isNew;
+    $('stCorrect').textContent = String(G.correct);
+    $('stWrong').textContent = String(G.wrong);
+    var shots = G.correct + G.wrong;
+    $('stAcc').textContent = shots > 0 ? Math.round(G.correct / shots * 100) + '%' : '—';
+    $('stStreak').textContent = String(G.bestStreak);
+    var list = $('missList');
+    list.textContent = '';
+    var shown = G.missed.slice(0, 5);
+    shown.forEach(function (q) {
+      var li = document.createElement('li');
+      var rq = document.createElement('div'); rq.className = 'rq'; rq.textContent = q.q;
+      var ra = document.createElement('div'); ra.className = 'ra'; ra.appendChild(document.createTextNode(uiText[lang].answer)); var b = document.createElement('b'); b.textContent = q.a; ra.appendChild(b);
+      var rn = document.createElement('div'); rn.className = 'rn'; rn.textContent = q.n;
+      li.appendChild(rq); li.appendChild(ra); li.appendChild(rn);
+      list.appendChild(li);
+    });
+    $('cleanMsg').hidden = shown.length > 0;
+    el.bmsg.hidden = true;
+    showScreen('end');
+  }
+
+  var uiText = {
+    en: {title:'Computer Hardware Whack-a-Mole',lead:'Hit only the mole holding the correct answer. You have 60 seconds to score as many points as possible.',high:'High Score',soundOn:'Sound: On',soundOff:'Sound: Off',action:'Action',points:'Points',details:'Details',correct:'Correct',wrong:'Wrong',timeout:'Time Out',correctDetail:'Answer faster to earn up to 50 bonus points. Each consecutive hit adds 10 combo points, up to 50.',wrongDetail:'Your combo resets, and your score cannot drop below 0.',timeoutDetail:'Each question has a 4–6 second time limit, which gets shorter as the game progresses. Your combo resets when time runs out.',start:'Start Game',personal:'Personal Best',time:'TIME',score:'SCORE',combo:'COMBO',ready:'Ready to play?',final:'FINAL SCORE',new:'NEW RECORD',accuracy:'Accuracy',bestCombo:'Best Combo',review:'Questions to Review',again:'Play Again',clean:'No incorrect or timed-out questions this round.',hint:'Hit the mole holding the correct answer.',answer:'Answer: ',correctTag:'CORRECT',wrongTag:'Wrong',timeTag:'Time Out',hintTag:'Hint',readyTag:'READY',timeUp:'TIME UP'},
+    zh: {title:'電腦硬件地鼠',lead:'只需打中舉著正確答案的地鼠！你有 60 秒時間，看看能取得多少分。',high:'最高分',soundOn:'音效：開',soundOff:'音效：關',action:'情況',points:'得分',details:'說明',correct:'答對',wrong:'答錯',timeout:'超時',correctDetail:'答得越快，最多可獲 50 分速度獎勵；每次連擊加 10 分，最多 50 分。',wrongDetail:'連擊歸零，總分不會低於 0。',timeoutDetail:'每題限時 4 至 6 秒，遊戲越後時間越短。超時後連擊歸零。',start:'開始遊戲',personal:'個人最高分',time:'時間',score:'分數',combo:'連擊',ready:'準備好開始了嗎？',final:'最終得分',new:'新紀錄',accuracy:'答題準確率',bestCombo:'最高連擊',review:'需要重溫的題目',again:'再玩一次',clean:'本局沒有答錯或超時的題目。',hint:'請打中舉著正確答案的地鼠。',answer:'答案：',correctTag:'答對',wrongTag:'答錯',timeTag:'超時',hintTag:'提示',readyTag:'準備',timeUp:'時間到'}
+  };
+  function setLanguage(next) {
+    lang = next; QS = lang === 'zh' ? QS_ZH : QS_EN;
+    var t = uiText[lang];
+    $('langBtn').textContent = lang === 'en' ? '中文' : 'English';
+    document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+    $('gameTitle').textContent=t.title; $('gameLead').textContent=t.lead;
+    document.querySelector('.tools span').childNodes[0].textContent=t.high+' ';
+    $('sndBtn').textContent=sndOn?t.soundOn:t.soundOff;
+    var th=document.querySelectorAll('.spec th'); ['action','points','details'].forEach(function(k,i){th[i].textContent=t[k];});
+    var rows=document.querySelectorAll('.spec tbody tr');
+    [['correct','correctDetail'],['wrong','wrongDetail'],['timeout','timeoutDetail']].forEach(function(pair,i){rows[i].children[0].textContent=t[pair[0]];rows[i].children[2].textContent=t[pair[1]];});
+    $('startBtn').textContent=t.start; document.querySelectorAll('.bestline').forEach(function(e){e.childNodes[0].textContent=t.personal+' ';});
+    var ks=document.querySelectorAll('.hud .k'); if(ks.length===3){ks[0].textContent=t.time;ks[1].textContent=t.score;ks[2].textContent=t.combo;}
+    $('qText').textContent=t.ready; document.querySelector('.result .label').textContent=t.final; $('endNew').textContent=t.new;
+    var statLabels=document.querySelectorAll('.stats .k'); if(statLabels.length===4){statLabels[0].textContent=t.correct;statLabels[1].textContent=t.wrong;statLabels[2].textContent=t.accuracy;statLabels[3].textContent=t.bestCombo;}
+    document.querySelector('.review h2').textContent=t.review; $('againBtn').textContent=t.again; $('cleanMsg').textContent=t.clean;
+    if (G.phase !== 'play') { $('qNo').textContent=t.readyTag; $('bmsg').textContent=t.readyTag; }
+  }
+
+  /* ---------- wiring ---------- */
+  $('langBtn').addEventListener('click', function () { setLanguage(lang === 'en' ? 'zh' : 'en'); });
+  $('startBtn').addEventListener('click', function () { unlock(); startGame(); });
+  $('againBtn').addEventListener('click', function () { unlock(); startGame(); });
+  el.board.addEventListener('pointerdown', function (e) {
+    var t = e.target.closest ? e.target.closest('.hole') : null;
+    if (!t) return;
+    e.preventDefault();
+    whack(Number(t.getAttribute('data-i')));
+  });
+  el.board.addEventListener('click', function (e) {
+    if (e.detail !== 0) return; // pointer clicks are handled on pointerdown; this catches the keyboard
+    var t = e.target.closest ? e.target.closest('.hole') : null;
+    if (t) whack(Number(t.getAttribute('data-i')));
+  });
+})();
+</script>
